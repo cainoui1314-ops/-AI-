@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import { useSkillsStore } from '@/store/modules/skills'
+import { useSettingsStore } from '@/store/modules/settings'
 import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
 
 const router = useRouter()
 const skillsStore = useSkillsStore()
+const settingsStore = useSettingsStore()
 const { skills } = storeToRefs(skillsStore)
 
 const selectedCategory = ref<string>('all')
+const expandedSkillId = ref<string | null>(null)
 
 const categories = [
   { id: 'all', label: '全部' },
@@ -19,37 +22,35 @@ const categories = [
   { id: 'data', label: '数据' },
 ]
 
-const skillUsage = (id: string) => {
-  const raw = localStorage.getItem(`yueji_skill_usage_${id}`)
-  return raw ? JSON.parse(raw) : { used: 0, total: 50, expires: '永久' }
-}
-
-const allInstalled = () => {
-  const result: { skill: any; usage: any; parentId?: string; parentName?: string }[] = []
+function allInstalled() {
+  const result: { skill: any; parentId?: string; parentName?: string }[] = []
   for (const s of skills.value) {
     if (s.children && s.children.length > 0) {
       for (const child of s.children) {
-        result.push({
-          skill: child,
-          usage: skillUsage(child.id),
-          parentId: s.id,
-          parentName: s.name,
-        })
+        result.push({ skill: child, parentId: s.id, parentName: s.name })
       }
     } else {
-      result.push({ skill: s, usage: skillUsage(s.id) })
+      result.push({ skill: s })
     }
   }
   return result
 }
 
-const filtered = () => {
+function filtered() {
   const items = allInstalled()
   if (selectedCategory.value === 'all') return items
   if (selectedCategory.value === 'selection') {
     return items.filter(i => i.parentId === 'selection')
   }
   return items.filter(i => i.skill.id === selectedCategory.value)
+}
+
+function toggleExpand(skillId: string) {
+  expandedSkillId.value = expandedSkillId.value === skillId ? null : skillId
+}
+
+function selectPersona(skillId: string, personaId: string) {
+  skillsStore.setPersona(skillId, personaId)
 }
 
 function goBack() {
@@ -93,15 +94,37 @@ function goBack() {
             </span>
           </div>
           <div class="skill-desc">{{ item.skill.description }}</div>
-          <div class="skill-usage">
-            <div class="usage-bar">
-              <div class="usage-fill" :style="{ width: `${Math.min((item.usage.used / item.usage.total) * 100, 100)}%` }"></div>
-            </div>
-            <div class="usage-text">
-              <span>已用 {{ item.usage.used }}/{{ item.usage.total }} 次</span>
-              <span class="usage-expire">{{ item.usage.expires }}</span>
+
+          <div class="persona-section" v-if="item.skill.personas && item.skill.personas.length">
+            <button class="persona-toggle" @click="toggleExpand(item.skill.id)">
+              <span class="persona-label">
+                {{ skillsStore.getActivePersona(item.skill.id)?.icon }} 
+                {{ skillsStore.getActivePersona(item.skill.id)?.name || '选择人设' }}
+              </span>
+              <span class="persona-arrow" :class="{ open: expandedSkillId === item.skill.id }">▼</span>
+            </button>
+
+            <div v-if="expandedSkillId === item.skill.id" class="persona-list">
+              <div
+                v-for="persona in item.skill.personas"
+                :key="persona.id"
+                class="persona-item"
+                :class="{ active: item.skill.activePersonaId === persona.id }"
+                @click="selectPersona(item.skill.id, persona.id)"
+              >
+                <span class="persona-icon">{{ persona.icon }}</span>
+                <div class="persona-info">
+                  <div class="persona-name">
+                    {{ persona.name }}
+                    <span v-if="persona.isDefault" class="default-badge">默认</span>
+                  </div>
+                  <div class="persona-desc">{{ persona.description }}</div>
+                </div>
+                <span v-if="item.skill.activePersonaId === persona.id" class="persona-check">✓</span>
+              </div>
             </div>
           </div>
+
           <div class="skill-actions">
             <span class="slash-cmd">{{ item.skill.slashCommand }}</span>
             <button class="use-btn" @click="router.push('/')">使用</button>
@@ -179,15 +202,40 @@ function goBack() {
   font-size: 13px; color: var(--muted); line-height: 1.5; margin-bottom: 14px;
 }
 
-.skill-usage { margin-bottom: 14px; }
-.usage-bar {
-  height: 4px; background: var(--surface-2); border-radius: 2px; overflow: hidden; margin-bottom: 6px;
+.persona-section { margin-bottom: 14px; }
+.persona-toggle {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 12px; background: var(--surface-2); border-radius: var(--radius-sm);
+  font-size: 13px; color: var(--text); width: 100%; transition: background 0.15s;
 }
-.usage-fill { height: 100%; background: var(--blue); border-radius: 2px; transition: width 0.3s; }
-.usage-text {
-  display: flex; justify-content: space-between; font-size: 11px; color: var(--muted);
+.persona-toggle:hover { background: var(--surface-3); }
+.persona-label { display: flex; align-items: center; gap: 6px; font-weight: 500; }
+.persona-arrow { font-size: 10px; color: var(--muted); transition: transform 0.2s; }
+.persona-arrow.open { transform: rotate(180deg); }
+
+.persona-list {
+  margin-top: 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
 }
-.usage-expire { color: var(--soft); }
+.persona-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; cursor: pointer; transition: background 0.1s;
+  border-bottom: 1px solid var(--line);
+}
+.persona-item:last-child { border-bottom: none; }
+.persona-item:hover { background: var(--surface-2); }
+.persona-item.active { background: var(--blue-soft); }
+.persona-icon { font-size: 18px; flex-shrink: 0; }
+.persona-info { flex: 1; }
+.persona-name { font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+.default-badge {
+  font-size: 10px; padding: 1px 5px; border-radius: 3px;
+  background: var(--green-soft); color: var(--green); font-weight: 600;
+}
+.persona-desc { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.persona-check { color: var(--blue); font-weight: 700; font-size: 14px; }
 
 .skill-actions {
   display: flex; align-items: center; justify-content: space-between;

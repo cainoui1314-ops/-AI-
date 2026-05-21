@@ -52,6 +52,7 @@ function toggleSkillEnabled(skillId: string) {
         >
           <span class="tab-icon">{{ skill.icon }}</span>
           <span class="tab-name">{{ skill.name }}</span>
+          <span v-if="skillsStore.getActivePersona(skill.id)" class="tab-persona">{{ skillsStore.getActivePersona(skill.id)?.icon }}</span>
         </button>
 
         <button v-if="editing" class="skill-tab add-tab" @click="router.push('/store')">
@@ -132,6 +133,7 @@ function toggleSkillEnabled(skillId: string) {
 
 .tab-icon { font-size: 13px; }
 .tab-name { font-size: 12px; }
+.tab-persona { font-size: 10px; opacity: 0.7; }
 
 .add-tab {
   background: transparent;

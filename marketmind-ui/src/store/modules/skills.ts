@@ -1,6 +1,44 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import type { Skill } from '@/types'
+import type { Skill, SkillPersona } from '@/types'
+
+const PERSONA_ANALYST: SkillPersona = {
+  id: 'analyst',
+  name: '数据分析师',
+  icon: '📊',
+  description: '以数据驱动为核心，用数字说话',
+  systemPrompt: '你是一位专业的电商数据分析师，擅长通过数据洞察商业机会。你的回答应该包含具体的数据支撑，用图表思维分析问题，给出可量化的建议。',
+  isDefault: true,
+  isCustom: false,
+}
+
+const PERSONA_CONSULTANT: SkillPersona = {
+  id: 'consultant',
+  name: '资深顾问',
+  icon: '👔',
+  description: '多年电商经验的全局视角',
+  systemPrompt: '你是一位拥有10年电商经验的资深运营顾问，擅长从全局视角分析问题。你的回答应该结合行业趋势、竞品分析和自身经验，给出战略性建议。',
+  isDefault: false,
+  isCustom: false,
+}
+
+const PERSONA_COACH: SkillPersona = {
+  id: 'coach',
+  name: '实战教练',
+  icon: '💪',
+  description: '手把手指导，一步步实操',
+  systemPrompt: '你是一位电商实战教练，擅长把复杂的运营问题拆解成简单可执行的步骤。你的回答应该给出清晰的操作步骤、时间节点和预期效果，像教练一样指导用户。',
+  isDefault: false,
+  isCustom: false,
+}
+
+function makeDefaultPersonas(): SkillPersona[] {
+  return [
+    { ...PERSONA_ANALYST },
+    { ...PERSONA_CONSULTANT },
+    { ...PERSONA_COACH },
+  ]
+}
 
 const defaultSkills: Skill[] = [
   {
@@ -13,6 +51,8 @@ const defaultSkills: Skill[] = [
     slashCommand: '/选品',
     presetPrompt: '/选品 ',
     enabled: true,
+    personas: makeDefaultPersonas(),
+    activePersonaId: 'analyst',
     children: [
       {
         id: 'selection-hot',
@@ -24,6 +64,8 @@ const defaultSkills: Skill[] = [
         slashCommand: '/爆款',
         presetPrompt: '/爆款分析 ',
         enabled: true,
+        personas: makeDefaultPersonas(),
+        activePersonaId: 'analyst',
       },
       {
         id: 'selection-trend',
@@ -35,6 +77,8 @@ const defaultSkills: Skill[] = [
         slashCommand: '/趋势',
         presetPrompt: '/趋势洞察 ',
         enabled: true,
+        personas: makeDefaultPersonas(),
+        activePersonaId: 'analyst',
       },
       {
         id: 'selection-seasonal',
@@ -46,6 +90,8 @@ const defaultSkills: Skill[] = [
         slashCommand: '/应季',
         presetPrompt: '/应季规划 ',
         enabled: true,
+        personas: makeDefaultPersonas(),
+        activePersonaId: 'analyst',
       },
       {
         id: 'selection-blueocean',
@@ -57,6 +103,8 @@ const defaultSkills: Skill[] = [
         slashCommand: '/蓝海',
         presetPrompt: '/蓝海挖掘 ',
         enabled: true,
+        personas: makeDefaultPersonas(),
+        activePersonaId: 'analyst',
       },
     ],
   },
@@ -70,6 +118,8 @@ const defaultSkills: Skill[] = [
     slashCommand: '/素材',
     presetPrompt: '/素材优化 ',
     enabled: true,
+    personas: makeDefaultPersonas(),
+    activePersonaId: 'analyst',
   },
   {
     id: 'seo',
@@ -81,6 +131,8 @@ const defaultSkills: Skill[] = [
     slashCommand: '/标题',
     presetPrompt: '/标题优化 ',
     enabled: true,
+    personas: makeDefaultPersonas(),
+    activePersonaId: 'analyst',
   },
   {
     id: 'listing',
@@ -92,6 +144,29 @@ const defaultSkills: Skill[] = [
     slashCommand: '/上架',
     presetPrompt: '/一键上架 ',
     enabled: true,
+    personas: [
+      {
+        id: 'boutique',
+        name: '精品上架',
+        icon: '✨',
+        description: '精心打磨每个商品，追求转化率',
+        systemPrompt: '你是一位精品上架专家，注重每个商品的精细化运营。你会仔细检查标题、主图、详情页的每个细节，确保商品信息准确且有吸引力，追求最高的转化率。',
+        isDefault: true,
+        isCustom: false,
+      },
+      {
+        id: 'batch',
+        name: '批量铺货',
+        icon: '📦',
+        description: '快速铺货，追求效率和数量',
+        systemPrompt: '你是一位批量铺货专家，注重效率和数量。你会帮助用户快速完成大批量商品上架，自动匹配类目和属性，批量生成标题和描述，最大化铺货速度。',
+        isDefault: false,
+        isCustom: false,
+      },
+      makeDefaultPersonas()[1],
+      makeDefaultPersonas()[2],
+    ],
+    activePersonaId: 'boutique',
   },
   {
     id: 'traffic',
@@ -103,6 +178,8 @@ const defaultSkills: Skill[] = [
     slashCommand: '/流量',
     presetPrompt: '/流量运营 ',
     enabled: true,
+    personas: makeDefaultPersonas(),
+    activePersonaId: 'analyst',
   },
   {
     id: 'analyst',
@@ -114,6 +191,8 @@ const defaultSkills: Skill[] = [
     slashCommand: '/诊断',
     presetPrompt: '/数据诊断 ',
     enabled: true,
+    personas: makeDefaultPersonas(),
+    activePersonaId: 'analyst',
   },
 ]
 
@@ -128,6 +207,17 @@ function loadSkills(): Skill[] {
   }
 }
 
+function findSkill(skills: Skill[], id: string): Skill | undefined {
+  for (const s of skills) {
+    if (s.id === id) return s
+    if (s.children) {
+      const child = s.children.find(c => c.id === id)
+      if (child) return child
+    }
+  }
+  return undefined
+}
+
 export const useSkillsStore = defineStore('skills', () => {
   const skills = ref<Skill[]>(loadSkills())
   const activeSkillId = ref<string | null>(null)
@@ -138,24 +228,12 @@ export const useSkillsStore = defineStore('skills', () => {
 
   function getActiveSkill(): Skill | undefined {
     if (!activeSkillId.value) return undefined
-    for (const s of skills.value) {
-      if (s.id === activeSkillId.value) return s
-      if (s.children) {
-        const child = s.children.find(c => c.id === activeSkillId.value)
-        if (child) return child
-      }
-    }
-    return skills.value.find(s => s.id === activeSkillId.value)
+    return findSkill(skills.value, activeSkillId.value)
   }
 
   function toggleSkill(id: string) {
-    for (const s of skills.value) {
-      if (s.id === id) { s.enabled = !s.enabled; saveToStorage(); return }
-      if (s.children) {
-        const child = s.children.find(c => c.id === id)
-        if (child) { child.enabled = !child.enabled; saveToStorage(); return }
-      }
-    }
+    const s = findSkill(skills.value, id)
+    if (s) { s.enabled = !s.enabled; saveToStorage() }
   }
 
   function getAllEnabled(): Skill[] {
@@ -176,6 +254,23 @@ export const useSkillsStore = defineStore('skills', () => {
     return all.find(s => s.slashCommand === cmd)
   }
 
+  function getActivePersona(skillId: string): SkillPersona | undefined {
+    const skill = findSkill(skills.value, skillId)
+    if (!skill || !skill.personas) return undefined
+    return skill.personas.find(p => p.id === skill.activePersonaId)
+  }
+
+  function setPersona(skillId: string, personaId: string) {
+    const skill = findSkill(skills.value, skillId)
+    if (skill && skill.personas) {
+      const persona = skill.personas.find(p => p.id === personaId)
+      if (persona) {
+        skill.activePersonaId = personaId
+        saveToStorage()
+      }
+    }
+  }
+
   function saveToStorage() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(skills.value))
   }
@@ -188,5 +283,7 @@ export const useSkillsStore = defineStore('skills', () => {
     toggleSkill,
     getAllEnabled,
     findBySlashCommand,
+    getActivePersona,
+    setPersona,
   }
 })
