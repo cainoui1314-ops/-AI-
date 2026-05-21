@@ -1,17 +1,19 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import { useSkillsStore } from '@/store/modules/skills'
-import { useSettingsStore } from '@/store/modules/settings'
+import { useChatStore } from '@/store/modules/chat'
 import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
 
 const router = useRouter()
 const skillsStore = useSkillsStore()
-const settingsStore = useSettingsStore()
+const chatStore = useChatStore()
 const { skills } = storeToRefs(skillsStore)
+const { conversations } = storeToRefs(chatStore)
 
 const selectedCategory = ref<string>('all')
 const expandedSkillId = ref<string | null>(null)
+const historySkillId = ref<string | null>(null)
 
 const categories = [
   { id: 'all', label: '全部' },
@@ -51,6 +53,22 @@ function toggleExpand(skillId: string) {
 
 function selectPersona(skillId: string, personaId: string) {
   skillsStore.setPersona(skillId, personaId)
+}
+
+function getSkillHistory(skillId: string) {
+  return conversations.value
+    .filter(c => c.activeSkill === skillId)
+    .sort((a, b) => b.updatedAt - a.updatedAt)
+    .slice(0, 10)
+}
+
+function toggleHistory(skillId: string) {
+  historySkillId.value = historySkillId.value === skillId ? null : skillId
+}
+
+function openConversation(convId: string) {
+  chatStore.selectConversation(convId)
+  router.push('/')
 }
 
 function goBack() {
@@ -127,7 +145,30 @@ function goBack() {
 
           <div class="skill-actions">
             <span class="slash-cmd">{{ item.skill.slashCommand }}</span>
-            <button class="use-btn" @click="router.push('/')">使用</button>
+            <div class="action-btns">
+              <button class="history-btn" @click="toggleHistory(item.skill.id)">📋 历史</button>
+              <button class="use-btn" @click="router.push('/')">使用</button>
+            </div>
+          </div>
+
+          <div v-if="historySkillId === item.skill.id" class="history-panel">
+            <div class="history-title">对话历史</div>
+            <template v-if="getSkillHistory(item.skill.id).length">
+              <div
+                v-for="conv in getSkillHistory(item.skill.id)"
+                :key="conv.id"
+                class="history-item"
+                @click="openConversation(conv.id)"
+              >
+                <span class="history-icon">💬</span>
+                <div class="history-info">
+                  <div class="history-name">{{ conv.title }}</div>
+                  <div class="history-meta">{{ conv.messages.length }} 条消息 · {{ new Date(conv.updatedAt).toLocaleDateString('zh-CN') }}</div>
+                </div>
+                <span class="history-arrow">→</span>
+              </div>
+            </template>
+            <div v-else class="history-empty">暂无对话记录</div>
           </div>
         </div>
       </div>
@@ -250,6 +291,30 @@ function goBack() {
   background: var(--blue); color: #fff; transition: opacity 0.15s;
 }
 .use-btn:hover { opacity: 0.85; }
+
+.action-btns { display: flex; gap: 6px; }
+.history-btn {
+  padding: 5px 12px; border-radius: 6px; font-size: 13px; font-weight: 500;
+  background: var(--surface-2); color: var(--muted); transition: all 0.15s;
+}
+.history-btn:hover { background: var(--surface-3); color: var(--text); }
+
+.history-panel {
+  margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line);
+}
+.history-title { font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 8px; letter-spacing: 0.5px; }
+.history-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; border-radius: var(--radius-sm);
+  cursor: pointer; transition: background 0.1s;
+}
+.history-item:hover { background: var(--surface-2); }
+.history-icon { font-size: 14px; flex-shrink: 0; }
+.history-info { flex: 1; min-width: 0; }
+.history-name { font-size: 13px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.history-meta { font-size: 11px; color: var(--muted); }
+.history-arrow { font-size: 13px; color: var(--soft); }
+.history-empty { font-size: 12px; color: var(--soft); text-align: center; padding: 12px; }
 
 .empty-state { text-align: center; padding: 60px 16px; }
 .empty-icon { font-size: 48px; margin-bottom: 16px; }

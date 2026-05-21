@@ -41,7 +41,7 @@ function goBackToChat() {
 <template>
   <aside class="sidebar">
     <div class="sidebar-header">
-      <button class="new-chat-btn" @click="chatStore.createConversation()">
+      <button class="new-chat-btn" @click="chatStore.createConversation(); router.push('/')">
         <span class="plus">+</span>
         <span>新对话</span>
       </button>
@@ -53,7 +53,7 @@ function goBackToChat() {
         :key="conv.id"
         class="conv-item"
         :class="{ active: conv.id === activeConversationId }"
-        @click="chatStore.selectConversation(conv.id)"
+        @click="chatStore.selectConversation(conv.id); router.push('/')"
         @mouseenter="hoverId = conv.id"
         @mouseleave="hoverId = null"
       >

@@ -41,6 +41,42 @@ const YUE_MODELS: YUEModel[] = [
     requiredPlan: 'pro',
     icon: '🎯',
   },
+  {
+    id: 'deepseek-chat',
+    name: 'DeepSeek Chat',
+    description: '免费·通用对话',
+    tag: '免费',
+    tokenMultiplier: 1.0,
+    requiredPlan: 'free',
+    icon: '🔮',
+  },
+  {
+    id: 'deepseek-reasoner',
+    name: 'DeepSeek Reasoner',
+    description: '免费·深度推理',
+    tag: '免费',
+    tokenMultiplier: 1.5,
+    requiredPlan: 'free',
+    icon: '🔍',
+  },
+  {
+    id: 'glm-4-flash',
+    name: 'GLM-4 Flash',
+    description: '免费·快速响应',
+    tag: '免费',
+    tokenMultiplier: 0.5,
+    requiredPlan: 'free',
+    icon: '💬',
+  },
+  {
+    id: 'qwen-plus',
+    name: 'Qwen Plus',
+    description: '免费·通用对话',
+    tag: '免费',
+    tokenMultiplier: 1.0,
+    requiredPlan: 'free',
+    icon: '🌐',
+  },
 ]
 
 interface SettingsData {
