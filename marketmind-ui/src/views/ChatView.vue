@@ -31,6 +31,7 @@ chatStore.ensureConversation()
   display: flex;
   flex-direction: column;
   min-width: 0;
+  min-height: 0;
   background: var(--bg);
   transition: margin-right 0.3s ease;
 }

@@ -23,6 +23,6 @@ import ChatSidebar from '@/components/chat/ChatSidebar.vue'
   display: flex;
   flex-direction: column;
   min-width: 0;
-  overflow-y: auto;
+  overflow: hidden;
 }
 </style>
