@@ -27,6 +27,8 @@ export interface Skill {
   presetPrompt: string
   enabled: boolean
   children?: Skill[]
+  personas: SkillPersona[]
+  activePersonaId: string
 }
 
 export interface Product {
@@ -48,9 +50,16 @@ export interface Product {
 }
 
 export interface UserProfile {
-  name: string
-  avatar: string
-  shopName: string
+  id: string
+  phone: string
+  businessMode: '有货源' | '无货源'
+  avatar: string | null
+  plan: 'free' | 'pro' | 'enterprise'
+  douyinBound: boolean
+  douyinShopId: string | null
+  douyinShopName: string | null
+  douyinMainCategory: string | null
+  douyinAuthorizedAt: string | null
 }
 
 export interface ModelProvider {
@@ -81,6 +90,9 @@ export interface AppSettings {
   quota: QuotaInfo
   userName: string
   shopName: string
+  plan: 'free' | 'pro' | 'enterprise'
+  quotaType: 'count' | 'token'
+  tokenBalance: number
 }
 
 export interface FavoriteItem {
@@ -91,4 +103,31 @@ export interface FavoriteItem {
   createdAt: number
   conversationId?: string
   tags: string[]
+}
+
+export interface SkillPersona {
+  id: string
+  name: string
+  icon: string
+  description: string
+  systemPrompt: string
+  isDefault: boolean
+  isCustom: boolean
+}
+
+export interface YUEModel {
+  id: string
+  name: string
+  description: string
+  tag: string
+  tokenMultiplier: number
+  requiredPlan: 'free' | 'pro' | 'enterprise'
+  icon: string
+}
+
+export interface TokenUsage {
+  promptTokens: number
+  completionTokens: number
+  totalTokens: number
+  actualModel?: string
 }
