@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
 import type { Conversation, ChatMessage, Product } from '@/types'
 
-const STORAGE_KEY = 'marketmind_conversations'
+const STORAGE_KEY = 'yueji_conversations'
 
 function loadConversations(): Conversation[] {
   try {
@@ -67,7 +67,7 @@ export const useChatStore = defineStore('chat', () => {
     conv.messages.push({
       id: `ai-greet-${Date.now()}`,
       role: 'ai',
-      content: '你好！我是 MarketMind AI 运营小助手 🤖\n\n我可以帮你找爆品、分析数据、优化商品、一键上架。\n\n以下是今天为你推荐的热门爆品，点击感兴趣的商品开始探索 👇',
+      content: '你好！我是悦己AI，你的抖音电商运营智能体 🤖\n\n我可以帮你找爆品、分析数据、优化商品、一键上架。\n\n以下是今天为你推荐的热门爆品，点击感兴趣的商品开始探索 👇',
       timestamp: Date.now(),
       products: trendingProducts,
       guidedOptions: undefined,

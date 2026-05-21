@@ -20,7 +20,7 @@ const categories = [
 ]
 
 const skillUsage = (id: string) => {
-  const raw = localStorage.getItem(`marketmind_skill_usage_${id}`)
+  const raw = localStorage.getItem(`yueji_skill_usage_${id}`)
   return raw ? JSON.parse(raw) : { used: 0, total: 50, expires: '永久' }
 }
 

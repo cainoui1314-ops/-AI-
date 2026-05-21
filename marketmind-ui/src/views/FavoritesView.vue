@@ -5,7 +5,7 @@ import type { FavoriteItem } from '@/types'
 
 const router = useRouter()
 
-const STORAGE_KEY = 'marketmind_favorites'
+const STORAGE_KEY = 'yueji_favorites'
 
 function loadFavorites(): FavoriteItem[] {
   try {

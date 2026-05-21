@@ -117,7 +117,7 @@ const defaultSkills: Skill[] = [
   },
 ]
 
-const STORAGE_KEY = 'marketmind_skills'
+const STORAGE_KEY = 'yueji_skills'
 
 function loadSkills(): Skill[] {
   try {

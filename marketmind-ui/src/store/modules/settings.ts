@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { ModelProvider, QuotaInfo, AppSettings } from '@/types'
 
-const STORAGE_KEY = 'marketmind_settings'
+const STORAGE_KEY = 'yueji_settings'
 
 const builtinProviders: ModelProvider[] = [
   {
