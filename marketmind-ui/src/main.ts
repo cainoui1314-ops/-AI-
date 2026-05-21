@@ -9,13 +9,12 @@ import './assets/styles/global.css'
 
 const app = createApp(App)
 
-// 注册所有Element Plus图标
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
 
 app.use(createPinia())
 app.use(router)
-app.use(ElementPlus, { locale: undefined }) // 使用中文locale
+app.use(ElementPlus)
 
 app.mount('#app')
