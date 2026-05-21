@@ -10,7 +10,7 @@ const route = useRoute()
 const chatStore = useChatStore()
 const settingsStore = useSettingsStore()
 const { conversations, activeConversationId } = storeToRefs(chatStore)
-const { settings, remaining } = storeToRefs(settingsStore)
+const { data: settings, remaining, quotaLabel } = storeToRefs(settingsStore)
 
 const hoverId = ref<string | null>(null)
 
@@ -88,16 +88,16 @@ function goBackToChat() {
       <div class="quota-bar" @click="router.push('/settings')">
         <div class="quota-label">剩余额度</div>
         <div class="quota-progress">
-          <div class="quota-fill" :style="{ width: `${(remaining / settings.quota.total) * 100}%` }"></div>
+          <div class="quota-fill" :style="{ width: `${settings.quotaType === 'token' ? Math.min((remaining / 500000) * 100, 100) : (remaining / settings.quota.total) * 100}%` }"></div>
         </div>
-        <div class="quota-text">{{ remaining }}/{{ settings.quota.total }}</div>
+        <div class="quota-text">{{ remaining }} {{ quotaLabel }}</div>
         <span class="quota-link">管理 →</span>
       </div>
       <div class="user-card" @click="router.push('/settings')">
-        <div class="user-avatar">{{ settings.userName.slice(0, 1) }}</div>
+        <div class="user-avatar">{{ (settings.userName || '用').slice(0, 1) }}</div>
         <div class="user-info">
-          <div class="user-name">{{ settings.userName }}</div>
-          <div class="user-shop">{{ settings.shopName }}</div>
+          <div class="user-name">{{ settings.userName || '未设置' }}</div>
+          <div class="user-shop">{{ settings.shopName || '未绑定店铺' }}</div>
         </div>
         <span class="settings-icon">⚙️</span>
       </div>
