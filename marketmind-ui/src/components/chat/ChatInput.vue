@@ -17,16 +17,16 @@ const inputText = ref('')
 const showSlashMenu = ref(false)
 const showModelMenu = ref(false)
 
-const { activeModel, remaining } = storeToRefs(settingsStore)
+const { activeModel, remaining, quotaLabel } = storeToRefs(settingsStore)
 
-const allModels = computed(() => {
-  const result: { providerId: string; providerName: string; modelId: string; modelName: string }[] = []
-  for (const p of settingsStore.settings.providers) {
-    for (const m of p.models) {
-      result.push({ providerId: p.id, providerName: p.name, modelId: m.id, modelName: m.name })
-    }
-  }
-  return result
+const visibleModels = computed(() => {
+  return settingsStore.yueModels.map(m => ({
+    id: m.id,
+    name: m.name,
+    icon: m.icon,
+    tag: m.tag,
+    locked: m.requiredPlan !== 'free' && !settingsStore.isPro(),
+  }))
 })
 
 const slashFilter = computed(() => {
@@ -56,8 +56,8 @@ function selectSlashSkill(skillId: string) {
   }
 }
 
-function selectModel(providerId: string, modelId: string) {
-  settingsStore.setActiveModel(providerId, modelId)
+function selectModel(modelId: string) {
+  settingsStore.setActiveModel(modelId)
   showModelMenu.value = false
 }
 
@@ -67,7 +67,7 @@ function sendMessage() {
 
   if (!settingsStore.canUse()) {
     chatStore.addAiMessage(
-      '⚠️ 你的免费额度已用完（100次/月）。\n\n请前往设置页面升级套餐，或等待下月额度重置。',
+      '⚠️ 你的额度已用完。\n\n请前往设置页面升级套餐，或等待额度重置。',
       undefined,
       ['前往设置', '查看额度详情']
     )
@@ -76,7 +76,8 @@ function sendMessage() {
   }
 
   chatStore.addUserMessage(text)
-  settingsStore.useQuota()
+  const modelMultiplier = activeModel.value?.tokenMultiplier ?? 1
+  settingsStore.useQuota(Math.round(modelMultiplier * 100))
   inputText.value = ''
   showSlashMenu.value = false
 
@@ -138,24 +139,27 @@ function handleKeydown(e: KeyboardEvent) {
       </div>
 
       <div class="model-picker" v-if="showModelMenu" @click.stop>
-        <div class="model-section-title">选择模型</div>
+        <div class="model-section-title">YUE 模型</div>
         <div
-          v-for="m in allModels"
-          :key="m.providerId + m.modelId"
+          v-for="m in availableModels"
+          :key="m.id"
           class="model-item"
-          :class="{ active: settingsStore.settings.activeProviderId === m.providerId && settingsStore.settings.activeModelId === m.modelId }"
-          @click="selectModel(m.providerId, m.modelId)"
+          :class="{ active: settingsStore.data.activeModelId === m.id }"
+          @click="selectModel(m.id)"
         >
-          <div class="model-item-name">{{ m.modelName }}</div>
-          <div class="model-item-provider">{{ m.providerName }}</div>
-          <span v-if="settingsStore.settings.activeProviderId === m.providerId && settingsStore.settings.activeModelId === m.modelId" class="model-check">✓</span>
+          <span class="model-item-icon">{{ m.icon }}</span>
+          <div class="model-item-info">
+            <div class="model-item-name">{{ m.name }}</div>
+            <div class="model-item-desc">{{ m.description }}</div>
+          </div>
+          <span v-if="settingsStore.data.activeModelId === m.id" class="model-check">✓</span>
         </div>
       </div>
 
       <div class="input-bar">
         <button class="model-btn" @click="showModelMenu = !showModelMenu; showSlashMenu = false">
-          <span class="model-btn-dot"></span>
-          <span class="model-btn-name">{{ activeModel?.name || '选择模型' }}</span>
+          <span class="model-btn-icon">{{ activeModel?.icon }}</span>
+          <span class="model-btn-name">{{ activeModel?.name || 'YUE Pro' }}</span>
         </button>
 
         <input
@@ -168,7 +172,10 @@ function handleKeydown(e: KeyboardEvent) {
         />
 
         <div class="input-actions">
-          <button class="quota-badge" @click="router.push('/settings')">{{ remaining }}</button>
+          <button class="quota-badge" @click="router.push('/settings')">
+            <span class="quota-dot"></span>
+            {{ remaining }} {{ quotaLabel }}
+          </button>
           <button class="send-btn" @click="sendMessage" :disabled="!inputText.trim()">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -208,23 +215,25 @@ function handleKeydown(e: KeyboardEvent) {
 .slash-desc { display: block; font-size: 12px; color: var(--muted); }
 
 .model-picker {
-  position: absolute; bottom: 100%; right: 0; width: 260px;
+  position: absolute; bottom: 100%; right: 0; width: 280px;
   background: var(--surface); border: 1px solid var(--line);
   border-radius: var(--radius); box-shadow: 0 8px 24px rgba(15,23,42,0.12);
   z-index: 50; margin-bottom: 8px; padding: 8px;
 }
-.model-section-title { font-size: 11px; font-weight: 600; color: var(--muted); padding: 4px 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-.model-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 6px; cursor: pointer; transition: background 0.1s; }
+.model-section-title { font-size: 11px; font-weight: 600; color: var(--muted); padding: 4px 8px; letter-spacing: 0.5px; }
+.model-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 6px; cursor: pointer; transition: background 0.1s; }
 .model-item:hover { background: var(--surface-2); }
 .model-item.active { background: var(--blue-soft); }
-.model-item-name { flex: 1; font-size: 13px; font-weight: 500; color: var(--text); }
-.model-item-provider { font-size: 11px; color: var(--muted); }
+.model-item-icon { font-size: 18px; flex-shrink: 0; }
+.model-item-info { flex: 1; }
+.model-item-name { font-size: 13px; font-weight: 500; color: var(--text); }
+.model-item-desc { font-size: 11px; color: var(--muted); }
 .model-check { color: var(--blue); font-weight: 700; font-size: 14px; }
 
 .input-bar {
   display: flex; align-items: center; gap: 0;
   background: var(--surface-2); border: 1px solid var(--line);
-  border-radius: 24px; padding: 4px 4px 4px 4px;
+  border-radius: 24px; padding: 4px;
   transition: border-color 0.15s;
 }
 .input-bar:focus-within { border-color: var(--blue); }
@@ -236,7 +245,7 @@ function handleKeydown(e: KeyboardEvent) {
   white-space: nowrap; transition: background 0.15s; flex-shrink: 0;
 }
 .model-btn:hover { background: var(--surface-3); }
-.model-btn-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+.model-btn-icon { font-size: 14px; }
 .model-btn-name { font-size: 12px; }
 
 .msg-input {
@@ -249,10 +258,12 @@ function handleKeydown(e: KeyboardEvent) {
 
 .quota-badge {
   font-size: 11px; font-weight: 600; color: var(--muted);
-  padding: 2px 8px; border-radius: var(--radius); background: var(--surface);
+  padding: 3px 10px; border-radius: 12px; background: var(--surface);
   cursor: pointer; transition: all 0.15s;
+  display: flex; align-items: center; gap: 4px;
 }
 .quota-badge:hover { color: var(--blue); background: var(--blue-soft); }
+.quota-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
 
 .send-btn {
   width: 36px; height: 36px; border-radius: 50%;
