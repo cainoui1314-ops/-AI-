@@ -5,6 +5,8 @@ export interface ChatMessage {
   timestamp: number
   products?: Product[]
   guidedOptions?: string[]
+  thinking?: string
+  isStreaming?: boolean
 }
 
 export interface Conversation {
@@ -31,6 +33,73 @@ export interface Skill {
   activePersonaId: string
 }
 
+export interface ProductScoreDimension {
+  label: string
+  score: number
+  maxScore: number
+  tip?: string
+}
+
+export interface ProductScores {
+  title: ProductScoreDimension
+  mainImage: ProductScoreDimension
+  video: ProductScoreDimension
+  reviews: ProductScoreDimension
+  sales: ProductScoreDimension
+  customerService: ProductScoreDimension
+  logistics: ProductScoreDimension
+  experience: ProductScoreDimension
+}
+
+export interface TrafficItem {
+  channel: string
+  percent: number
+  trend: 'up' | 'down' | 'stable'
+}
+
+export interface CostItem {
+  label: string
+  mine: number
+  competitor: number
+  unit: string
+}
+
+export interface ExperienceScore {
+  product: number
+  logistics: number
+  service: number
+  overall: number
+  competitorOverall: number
+  gaps: { dimension: string; myScore: number; competitorScore: number; suggestion: string }[]
+}
+
+export interface CompetitorSnapshot {
+  name: string
+  price: number
+  dailySales: string
+  score: number
+  scores: ProductScores
+  experience: ExperienceScore
+}
+
+export interface ProductDetail {
+  category: string
+  trend: string
+  competition: string
+  profitMargin: string
+  scores?: ProductScores
+  traffic?: TrafficItem[]
+  costs?: CostItem[]
+  experience?: ExperienceScore
+  competitor?: CompetitorSnapshot
+  newProductTags?: string[]
+}
+
+export interface NewProductFilter {
+  label: string
+  options: string[]
+}
+
 export interface Product {
   id: string
   name: string
@@ -40,12 +109,7 @@ export interface Product {
   tag: string
   sales: string
   platform: string
-  detail: {
-    category: string
-    trend: string
-    competition: string
-    profitMargin: string
-  }
+  detail: ProductDetail
   actionOptions: string[]
 }
 

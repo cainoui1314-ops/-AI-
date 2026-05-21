@@ -21,6 +21,21 @@ watch(
   }
 )
 
+watch(
+  () => activeConversation.value?.messages.map(m => m.content + (m.thinking ?? '') + (m.isStreaming ? '1' : '0')),
+  () => {
+    nextTick(() => {
+      if (!scrollContainer.value) return
+      const el = scrollContainer.value
+      const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 180
+      if (nearBottom) {
+        el.scrollTop = el.scrollHeight
+      }
+    })
+  },
+  { deep: true }
+)
+
 function formatContent(content: string) {
   return content.replace(/\n/g, '<br>')
 }
@@ -28,14 +43,39 @@ function formatContent(content: string) {
 function onProductClick(product: Product) {
   productStore.selectProduct(product)
   chatStore.addUserMessage(`我想了解「${product.name}」`)
-  setTimeout(() => {
-    const derivedQuestions = chatStore.getDerivedQuestions(product.name)
-    chatStore.addAiMessage(
-      `「${product.name}」是个不错的选择！🔥\n\n📊 快速数据\n• 爆品指数：${product.score}/100\n• 日销量：${product.sales}\n• 利润率：${product.detail.profitMargin}\n• 趋势：${product.detail.trend}\n\n点击右侧面板查看完整详情，或选择下方问题继续探索 👇`,
-      undefined,
-      derivedQuestions
-    )
-  }, 500)
+  const derivedQuestions = chatStore.getDerivedQuestions(product.name)
+
+  const msgId = chatStore.startStreamingMessage()
+  const thinkingSteps = [
+    `看了一下「${product.name}」的数据...`,
+    '拉了爆品指数和同类对比',
+    '利润空间和趋势都看了一遍',
+    '整理好了',
+  ]
+  let i = 0
+  const interval = setInterval(() => {
+    if (i >= thinkingSteps.length) {
+      clearInterval(interval)
+      setTimeout(() => {
+        const content = `嗯，「${product.name}」确实值得关注 🔥\n\n📊 快速数据\n• 爆品指数：${product.score}/100\n• 日销量：${product.sales}\n• 利润率：${product.detail.profitMargin}\n• 趋势：${product.detail.trend}\n\n点击右侧面板看完整详情，或者选个方向继续聊。`
+        const chars = [...content]
+        let j = 0
+        const contentInterval = setInterval(() => {
+          if (j >= chars.length) {
+            clearInterval(contentInterval)
+            chatStore.finishStreaming(msgId, undefined, derivedQuestions)
+            return
+          }
+          const chunkSize = Math.random() > 0.85 ? 3 : Math.random() > 0.5 ? 2 : 1
+          chatStore.appendStreamContent(msgId, chars.slice(j, j + chunkSize).join(''), 'content')
+          j += chunkSize
+        }, 20 + Math.random() * 25)
+      }, 300)
+      return
+    }
+    chatStore.appendStreamContent(msgId, (i === 0 ? '' : '\n') + thinkingSteps[i], 'thinking')
+    i++
+  }, 250 + Math.random() * 200)
 }
 </script>
 
@@ -45,7 +85,20 @@ function onProductClick(product: Product) {
       <div class="bubble-row" :class="msg.role">
         <div class="bubble-avatar">{{ msg.role === 'ai' ? '🤖' : '👤' }}</div>
         <div class="bubble-body">
-          <div class="bubble-content" :class="msg.role" v-html="formatContent(msg.content)"></div>
+          <div v-if="msg.thinking" class="thinking-block" :class="{ collapsed: !msg.isStreaming && msg.content }">
+            <div class="thinking-header">
+              <span class="thinking-icon">{{ msg.isStreaming ? '🧠' : '💭' }}</span>
+              <span class="thinking-label">深度思考</span>
+              <span v-if="msg.isStreaming" class="thinking-dots"><span>.</span><span>.</span><span>.</span></span>
+            </div>
+            <div class="thinking-text" v-html="formatContent(msg.thinking)"></div>
+          </div>
+
+          <div v-if="msg.content || msg.isStreaming" class="bubble-content" :class="msg.role">
+            <span v-if="msg.content" v-html="formatContent(msg.content)"></span>
+            <span v-if="msg.isStreaming && !msg.content" class="thinking-label" style="color: var(--muted);">正在组织回复...</span>
+            <span v-if="msg.isStreaming" class="streaming-cursor">▌</span>
+          </div>
 
           <div v-if="msg.products && msg.products.length" class="product-grid">
             <div
@@ -115,6 +168,52 @@ function onProductClick(product: Product) {
 
 .bubble-body { max-width: calc(100% - 50px); }
 
+.thinking-block {
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  transition: all 0.3s ease;
+}
+.thinking-block.collapsed {
+  max-height: 32px;
+  overflow: hidden;
+  opacity: 0.6;
+  cursor: pointer;
+}
+.thinking-block.collapsed:hover {
+  max-height: 500px;
+  opacity: 1;
+}
+.thinking-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 500;
+}
+.thinking-icon { font-size: 13px; }
+.thinking-label { letter-spacing: 0.3px; }
+.thinking-dots span {
+  animation: dotPulse 1.4s infinite;
+  opacity: 0;
+}
+.thinking-dots span:nth-child(1) { animation-delay: 0s; }
+.thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
+.thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes dotPulse {
+  0%, 60%, 100% { opacity: 0; }
+  30% { opacity: 1; }
+}
+.thinking-text {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-top: 6px;
+}
+
 .bubble-content {
   padding: 12px 16px;
   border-radius: var(--radius-lg);
@@ -131,6 +230,17 @@ function onProductClick(product: Product) {
   background: var(--blue);
   color: #fff;
   border-top-right-radius: 4px;
+}
+
+.streaming-cursor {
+  color: var(--blue);
+  animation: cursorBlink 0.8s step-end infinite;
+  font-weight: 300;
+  margin-left: 1px;
+}
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 
 .product-grid {

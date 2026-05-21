@@ -119,6 +119,45 @@ export const useChatStore = defineStore('chat', () => {
     })
   }
 
+  function startStreamingMessage(): string {
+    if (!activeConversation.value) createConversation()
+    const id = `ai-${Date.now()}`
+    const msg: ChatMessage = {
+      id,
+      role: 'ai',
+      content: '',
+      timestamp: Date.now(),
+      thinking: '',
+      isStreaming: true,
+    }
+    activeConversation.value!.messages.push(msg)
+    activeConversation.value!.updatedAt = Date.now()
+    return id
+  }
+
+  function appendStreamContent(msgId: string, chunk: string, field: 'thinking' | 'content' = 'content') {
+    if (!activeConversation.value) return
+    const msg = activeConversation.value.messages.find(m => m.id === msgId)
+    if (!msg) return
+    if (field === 'thinking') {
+      msg.thinking = (msg.thinking ?? '') + chunk
+    } else {
+      msg.content += chunk
+    }
+  }
+
+  function finishStreaming(msgId: string, products?: Product[], guidedOptions?: string[]) {
+    if (!activeConversation.value) return
+    const msg = activeConversation.value.messages.find(m => m.id === msgId)
+    if (!msg) return
+    msg.isStreaming = false
+    if (products) msg.products = products
+    if (guidedOptions) msg.guidedOptions = guidedOptions
+    if (activeConversation.value.title === '新对话') {
+      activeConversation.value.title = msg.content.slice(0, 20)
+    }
+  }
+
   function addUserMessage(content: string) {
     addMessage({
       id: `user-${Date.now()}`,
@@ -171,5 +210,8 @@ export const useChatStore = defineStore('chat', () => {
     setActiveSkill,
     ensureConversation,
     getDerivedQuestions,
+    startStreamingMessage,
+    appendStreamContent,
+    finishStreaming,
   }
 })

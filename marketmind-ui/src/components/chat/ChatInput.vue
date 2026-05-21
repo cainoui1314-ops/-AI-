@@ -67,9 +67,9 @@ function sendMessage() {
 
   if (!settingsStore.canUse()) {
     chatStore.addAiMessage(
-      '⚠️ 你的额度已用完。\n\n请前往设置页面升级套餐，或等待额度重置。',
+      '⚠️ 额度用完了，去设置里升级一下套餐吧。',
       undefined,
-      ['前往设置', '查看额度详情']
+      ['前往设置', '查看额度']
     )
     inputText.value = ''
     return
@@ -93,17 +93,105 @@ function sendMessage() {
   const lastAiMsg = [...history].reverse().find(m => m.role === 'ai')
   const lastUserMsg = [...history].reverse().find(m => m.role === 'user')
 
-  setTimeout(() => {
-    const reply = generateSmartReply(text, {
-      msgCount,
-      history,
-      skill,
-      persona,
-      lastAiMsg: lastAiMsg?.content ?? '',
-      lastUserMsg: lastUserMsg?.content ?? '',
+  const ctx = {
+    msgCount,
+    history,
+    skill,
+    persona,
+    lastAiMsg: lastAiMsg?.content ?? '',
+    lastUserMsg: lastUserMsg?.content ?? '',
+  }
+
+  const msgId = chatStore.startStreamingMessage()
+
+  const thinkingSteps = generateThinkingSteps(text, ctx)
+  streamThinking(msgId, thinkingSteps, () => {
+    const reply = generateSmartReply(text, ctx)
+    streamContent(msgId, reply.content, () => {
+      chatStore.finishStreaming(msgId, reply.products, reply.options)
     })
-    chatStore.addAiMessage(reply.content, reply.products, reply.options)
-  }, 400 + Math.random() * 400)
+  })
+}
+
+function generateThinkingSteps(text: string, ctx: {
+  msgCount: number
+  skill: ReturnType<typeof skillsStore.getActiveSkill>
+  persona: ReturnType<typeof skillsStore.getActivePersona>
+  lastAiMsg: string
+  lastUserMsg: string
+}): string[] {
+  const isSelection = /找|推荐|爆|品|蓝海|选品/.test(text)
+  const isOptimize = /优化|标题|主图|关键词/.test(text)
+  const isListing = /上架|铺货|发布/.test(text)
+  const isData = /数据|分析|诊断|流量|ROI|转化/.test(text)
+
+  if (isSelection) {
+    return [
+      '先看看你问的关键词最近的搜索热度...',
+      '对比了一下类目下 Top 20 商品的走势',
+      '结合你的店铺定位筛选了几个方向',
+      '嗯，利润空间和竞争度都考虑进去了',
+    ]
+  }
+  if (isOptimize) {
+    return [
+      '看了一下你提到的商品当前数据...',
+      '拉了同类目 Top 5 的标题结构做对比',
+      '分析了一下搜索词的热度变化',
+      '有个发现，可能是影响点击率的关键点',
+    ]
+  }
+  if (isListing) {
+    return [
+      '先确认一下平台最新的类目规则...',
+      '看了一下素材准备情况',
+      '对比了几个上架策略的成功率',
+      '好了，有思路了',
+    ]
+  }
+  if (isData) {
+    return [
+      '拉了一下你店铺最近的数据...',
+      '对比了行业均值和你店铺的差距',
+      '发现一个有意思的趋势',
+      '整理一下思路，给你说清楚',
+    ]
+  }
+  return [
+    `理解一下你的问题——"${text.slice(0, 20)}"`,
+    '翻了一下相关数据和案例',
+    '结合行业经验想想怎么帮你',
+    ctx.msgCount > 3 ? '结合我们之前聊的内容...' : '好了，有想法了',
+  ]
+}
+
+function streamThinking(msgId: string, steps: string[], onDone: () => void) {
+  let i = 0
+  const interval = setInterval(() => {
+    if (i >= steps.length) {
+      clearInterval(interval)
+      setTimeout(onDone, 300)
+      return
+    }
+    chatStore.appendStreamContent(msgId, (i === 0 ? '' : '\n') + steps[i], 'thinking')
+    i++
+  }, 250 + Math.random() * 200)
+}
+
+function streamContent(msgId: string, fullContent: string, onDone: () => void) {
+  const chars = [...fullContent]
+  let i = 0
+  const interval = setInterval(() => {
+    if (i >= chars.length) {
+      clearInterval(interval)
+      onDone()
+      return
+    }
+    const chunkSize = Math.random() > 0.85 ? 3 : Math.random() > 0.5 ? 2 : 1
+    const chunk = chars.slice(i, i + chunkSize).join('')
+    chatStore.appendStreamContent(msgId, chunk, 'content')
+    i += chunkSize
+  }, 20 + Math.random() * 25)
 }
 
 function generateSmartReply(
@@ -119,112 +207,111 @@ function generateSmartReply(
 ): { content: string; products?: any[]; options: string[] } {
   const picks = <T>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)]
 
-  const greetings = [
-    '好的，我来帮你看看。',
-    '没问题，马上分析。',
-    '收到！这就处理。',
-    '了解，我来分析一下。',
-    '好的，基于目前的数据来看——',
+  const openings = [
+    '嗯，我看了一下。',
+    '说实话，这个挺有意思的。',
+    '好，说下我的看法。',
+    '了解，我来分析下。',
+    '对，我注意到一个点——',
   ]
 
-  const followUps = [
-    `关于「${text.slice(0, 15)}」，我继续深入分析：`,
-    `顺着刚才的思路，针对「${text.slice(0, 15)}」：`,
-    `结合之前的讨论，我补充几点：`,
-    `在你提到的「${text.slice(0, 15)}」基础上：`,
-    `基于我们已经聊过的内容：`,
+  const followOpenings = [
+    `关于「${text.slice(0, 15)}」，我接着刚才的说——`,
+    `嗯，顺着我们的思路继续——`,
+    `结合我们之前聊的，再补充几个点：`,
+    `你提到的「${text.slice(0, 15)}」，我想了下——`,
   ]
 
-  const personaTone = ctx.persona
+  const personaVoice = ctx.persona
     ? {
-        analyst: { prefix: '📊 数据上看，', style: '具体数据' },
-        consultant: { prefix: '💼 从行业经验来看，', style: '战略建议' },
-        coach: { prefix: '👉 第一步，', style: '操作步骤' },
-        boutique: { prefix: '✨ 精细化角度，', style: '细节优化' },
-        batch: { prefix: '📦 效率优先，', style: '批量操作' },
-      }[ctx.persona.id] ?? { prefix: '', style: '' }
-    : { prefix: '', style: '' }
+        analyst: { say: '数据上看,', feel: '从数字里能看到不少东西' },
+        consultant: { say: '从行业角度来看,', feel: '我在几个客户那里见过类似情况' },
+        coach: { say: '来，跟着我,', feel: '一步一步来，不急' },
+        boutique: { say: '细节决定成败,', feel: '这个地方很多人会忽略' },
+        batch: { say: '效率第一,', feel: '批量操作的关键在于标准化' },
+      }[ctx.persona.id] ?? { say: '', feel: '' }
+    : { say: '', feel: '' }
 
-  const isSelection = text.includes('找') || text.includes('推荐') || text.includes('爆') || text.includes('品') || text.includes('蓝海') || text.includes('选品')
-  const isOptimize = text.includes('优化') || text.includes('标题') || text.includes('主图') || text.includes('关键词')
-  const isListing = text.includes('上架') || text.includes('铺货') || text.includes('发布')
-  const isData = text.includes('数据') || text.includes('分析') || text.includes('诊断') || text.includes('流量') || text.includes('ROI') || text.includes('转化')
-  const isContinuation = ctx.msgCount > 3 && (text.includes('继续') || text.includes('还有吗') || text.includes('然后呢') || text.includes('更多'))
+  const isSelection = /找|推荐|爆|品|蓝海|选品/.test(text)
+  const isOptimize = /优化|标题|主图|关键词/.test(text)
+  const isListing = /上架|铺货|发布/.test(text)
+  const isData = /数据|分析|诊断|流量|ROI|转化/.test(text)
+  const isContinuation = ctx.msgCount > 4 && /继续|还有吗|然后呢|更多/.test(text)
+
+  const contextRef = ctx.msgCount > 3
+    ? `\n\n（ps，结合你之前说的「${ctx.lastUserMsg.slice(0, 15)}」）`
+    : ''
 
   if (isContinuation) {
     return {
-      content: `${picks(followUps)}\n\n${personaTone.prefix}我注意到我们之前讨论过「${ctx.lastUserMsg.slice(0, 20)}」，这里有几个延伸方向：\n\n1. ${picks(['深挖刚才提到的数据维度', '看看竞品在这块的策略', '调整参数再跑一轮分析', '关注下供应链侧的变化'])}\n2. ${picks(['对比你店铺和其他头部卖家的差距', '结合季节性因素做调整', '从用户评价里找灵感', '测试不同定价策略'])}\n3. ${picks(['关注下周的流量趋势', '做个小规模AB测试', '把这个品放到其他平台试试', '联系供应商谈成本优化'])}`,
+      content: `${picks(followOpenings)}\n\n${personaVoice.say} 还有几个方向你可以看看：\n\n1. ${picks(['深挖一下刚才的数据维度，看看有没有被忽略的', '看下竞品最近在这块的动态', '换个参数跑一轮新分析', '供应链那边可能有变化'])}\n2. ${picks(['对比一下你和头部卖家的差距到底在哪', '结合季节因素做点调整', '从用户差评里找找灵感，有时候比好评管用', '试个不同的定价策略'])}\n3. ${picks(['关注下下周的趋势预测', '做个小规模AB测试', '放到另一个平台试试水', '跟供应商聊聊降成本的事'])}${contextRef}`,
       options: picks([
-        ['深入分析第一个方向', '执行第二个方案', '先做AB测试'],
-        ['给我更多数据支撑', '帮我制定执行计划', '看下竞品怎么做的'],
-        ['换个角度分析', '给我具体的操作步骤', '这个方案的预期效果'],
+        ['第一个方向展开说说', '直接给我操作步骤', '先做个AB测试'],
+        ['给我看数据支撑', '帮我定个执行计划', '竞品怎么做的'],
+        ['换个角度看看', '这个方案的预期效果', '有风险吗'],
       ]),
     }
   }
 
   if (isSelection) {
     const products = productStore.getSampleProducts()
-    const contextNote = ctx.msgCount > 2
-      ? `\n\n补充：结合你之前提到的「${ctx.lastUserMsg.slice(0, 15)}」，我调整了推荐权重。`
-      : ''
     return {
-      content: `${picks(greetings)}${contextNote}\n\n${personaTone.prefix}已分析「${text}」相关商品，以下是推荐：\n\n点击商品查看详情，或告诉我你更关注哪类。`,
+      content: `${picks(openings)}${contextRef}\n\n${personaVoice.say} 我帮你筛了几个品，${personaVoice.feel}。\n\n你看看这几个，有感兴趣的我们细聊。`,
       products,
       options: picks([
-        ['查看更多类似商品', '分析推荐商品ROI', '制定选品策略'],
-        ['这些品的利润空间如何', '有没有竞争更小的', '结合我的店铺推荐'],
-        ['帮我对比这几个品', '先看第一个的详细数据', '这几个品的趋势能持续吗'],
+        ['利润空间怎么样', '有没有竞争小一点的', '结合我店铺情况再推'],
+        ['帮我对比下这几个', '先看第一个的数据', '这趋势能持续多久'],
+        ['再看看其他的', '选品的逻辑是什么', '这几个品的风险'],
       ]),
     }
   }
 
   if (isOptimize) {
-    const prevContext = ctx.lastAiMsg ? `\n\n（我注意到我们之前聊过相关话题，这次我会结合之前的分析来优化。）` : ''
     return {
-      content: `${picks(greetings)}${prevContext}\n\n${personaTone.prefix}关于「${text.slice(0, 20)}」的优化：\n\n1. ${picks(['当前标题缺少高搜索量关键词，建议加入"夏季""冰丝""凉感"等热词', '主图点击率偏低，建议突出使用场景和效果对比', '关键词布局不够，建议长尾词+核心词组合'])}\n2. ${picks(['可以试试A/B测试，同时跑两版标题看数据', '参考类目Top3的标题结构做优化', '加入季节性关键词提升时效流量'])}\n3. ${picks(['优化后预计搜索曝光提升20-30%', '建议同步优化主图形成组合效应', '先改标题观察3天数据再做下一步'])}`,
+      content: `${picks(openings)}${contextRef}\n\n${personaVoice.say} 关于「${text.slice(0, 20)}」——\n\n${personaVoice.feel}。\n\n1. ${picks(['当前标题缺了几个高搜索量的词，加上"夏季""冰丝""凉感"试试', '主图的问题可能不在设计，在于没突出使用场景', '关键词布局太散了，集中一下效果会好很多'])}\n2. ${picks(['建议A/B测试，同时跑两版看数据', '看看类目前3的标题结构，有规律可循', '加点时效性的词，流量会明显上来'])}\n3. ${picks(['改完预计搜索曝光能提20-30%', '建议标题和主图一起改，别单改一个', '先改一个观察3天，别一口气全改了'])}`,
       options: picks([
-        ['帮我生成优化后的标题', '看下竞品的标题怎么写的', '分析关键词热度'],
-        ['直接执行这个优化方案', '还有其他优化建议吗', '给我看个案例'],
+        ['帮我直接改一版标题', '看下竞品的标题', '关键词热度排个序'],
+        ['就按这个方案来', '还有别的建议吗', '给我看个案例'],
       ]),
     }
   }
 
   if (isListing) {
     return {
-      content: `${picks(greetings)}\n\n${personaTone.prefix}关于上架需求：\n\n${ctx.msgCount > 2 ? '结合我们之前分析的选品方向，' : ''}我建议：\n\n1. ${picks(['先确认目标平台的类目映射规则', '准备好所有素材再批量操作', '检查下商品属性是否完整'])}\n2. ${picks(['建议用模板先跑一个小批量测试', '跨平台铺货建议先上抖音再做其他', '注意不同平台的定价策略差异'])}\n3. ${picks(['上架后48小时内关注流量数据', '同步开启基础流量投放', '做好客服话术准备'])}`,
+      content: `${picks(openings)}${contextRef}\n\n${personaVoice.say} 上架这块，${ctx.msgCount > 3 ? '按我们之前定的方向' : '先说几个关键点'}：\n\n1. ${picks(['类目映射规则最近有变化，先确认下', '素材准备好了再批量搞，不然容易翻车', '商品属性填完整，不然后面影响搜索权重'])}\n2. ${picks(['先小批量测试，别一上来就全铺', '抖音优先，其他平台可以缓一缓', '不同平台定价要有差异，别一刀切'])}\n3. ${picks(['上架后48小时内盯紧流量', '同步开基础投放，别等自然流量', '客服话术提前准备好'])}`,
       options: picks([
-        ['批量上架到抖音', '跨平台铺货', '设置上架模板'],
-        ['先帮我检查类目映射', '用什么模板比较好', '上架后怎么起量'],
+        ['批量上架到抖音', '跨平台铺货方案', '帮我设个上架模板'],
+        ['先检查类目映射', '用什么模板好', '上架完怎么起量'],
       ]),
     }
   }
 
   if (isData) {
     const dataPoints = [
-      `店铺整体转化率${(Math.random() * 3 + 1).toFixed(1)}%，${picks(['略低于行业均值', '处于中等水平', '有提升空间'])}`,
-      `近7天流量${picks(['上涨12%', '下降5%', '基本持平'])}，${picks(['主要来自搜索', '推荐流量占大头', '付费占比偏高'])}`,
-      `爆款品贡献了${Math.floor(Math.random() * 40 + 20)}%的GMV，${picks(['头部集中度偏高', '分布还算健康', '需要培育更多潜力款'])}`,
+      `你店铺整体转化率${(Math.random() * 3 + 1).toFixed(1)}%，${picks(['比行业均值低一点', '中等水平', '但还有提升空间'])}`,
+      `最近7天流量${picks(['涨了12%', '掉了5%', '基本没动'])}，${picks(['主要来自搜索', '推荐流量是大头', '付费占比有点高了'])}`,
+      `爆款贡献了${Math.floor(Math.random() * 40 + 20)}%的GMV，${picks(['太依赖单品了', '分布还行', '得再养几个潜力款'])}`,
     ]
     return {
-      content: `${picks(greetings)}\n\n${personaTone.prefix}关于「${text}」的数据分析：\n\n${dataPoints.join('\n')}\n\n${ctx.msgCount > 3 ? '结合你之前的操作和反馈，' : ''}我的建议：\n1. ${picks(['先优化转化率最低的3个商品', '加大高ROI品的投放', '调整低效品的定价策略'])}\n2. ${picks(['关注这周的数据变化趋势', '和上周做个对比分析', '制定一个7天优化计划'])}`,
+      content: `${picks(openings)}${contextRef}\n\n${personaVoice.say}\n\n${dataPoints.join('\n')}\n\n${ctx.msgCount > 3 ? '结合你之前的调整，' : ''}我的看法：\n1. ${picks(['先把转化最差的3个品拉出来看', '高ROI的品可以加大投放', '几个低效品该调价了'])}\n2. ${picks(['这周数据走势值得关注', '和上周对比一下更清楚', '我帮你做个7天优化计划'])}`,
       options: picks([
-        ['详细分析数据', '制定优化计划', '看下竞品数据对比'],
-        ['帮我深入诊断', '先从转化率入手', '给我具体的执行方案'],
+        ['深入分析一下', '帮我定个优化计划', '和竞品对比下'],
+        ['从转化率开始', '给我具体怎么操作', '风险大吗'],
       ]),
     }
   }
 
   const generalReplies = [
-    `${picks(greetings)}\n\n${personaTone.prefix}关于「${text}」，我来分析：\n\n${ctx.msgCount > 3 ? `结合我们之前讨论的内容，` : ''}${picks(['从数据角度', '从运营经验来看', '从实操角度'])}，我有几个思路：\n\n1. ${picks(['先明确你的核心目标是什么', '从最可能见效的地方入手', '参考同行的成功案例'])}\n2. ${picks(['做一个快速的竞品调研', '看下你店铺的数据异常点', '结合当前的行业趋势'])}\n3. ${picks(['制定一个可执行的7天计划', '先跑一个小测试验证方向', '把这个拆解成具体步骤'])}\n\n你想从哪个方向开始？`,
-    `${ctx.msgCount > 3 ? picks(followUps) : picks(greetings)}\n\n${personaTone.prefix}「${text}」是个好方向。\n\n${ctx.msgCount > 3 ? '基于我们之前的讨论，' : ''}${picks(['我的建议是分两步走', '这里有个关键决策点', '先理清优先级'])}：\n\n${picks(['第一步：做市场验证', '首先：确认你的差异化点', '关键：找到你的核心优势'])}\n→ ${picks(['通过小规模测试来验证', '分析头部卖家的策略', '从你的用户评价中找线索'])}\n\n你想先聊哪个方面？`,
+    `${picks(openings)}${contextRef}\n\n${personaVoice.say} 关于「${text}」——\n\n${personaVoice.feel}。${ctx.msgCount > 3 ? '我们之前聊的那些我记着呢，' : ''}${picks(['几个思路：', '我的建议：', '先理一下：'])}\n\n1. ${picks(['先想清楚你核心要解决什么', '从最容易见效的地方入手', '看看同行怎么做的'])}\n2. ${picks(['做个快速调研', '看下数据里有没有异常', '关注下最近的行业变化'])}\n3. ${picks(['定个7天计划，别想太多先动起来', '先小范围测试一下', '拆成小步骤一步步来'])}\n\n你想先聊哪个？`,
+    `${ctx.msgCount > 3 ? picks(followOpenings) : picks(openings)}\n\n${personaVoice.say}「${text}」这个方向不错。\n\n${personaVoice.feel}。${picks(['分两步走：', '有个关键点要注意：', '先排个优先级：'])}\n\n${picks(['先做市场验证', '确认你的差异化在哪', '找到你的核心优势'])}\n→ ${picks(['小规模测试验证', '研究头部卖家的策略', '从用户反馈里找线索'])}\n\n你想先从哪开始？`,
   ]
 
   return {
     content: picks(generalReplies),
     options: picks([
-      ['详细分析数据', '查看市场趋势', '获取操作建议'],
-      ['给我具体的执行步骤', '先看竞品怎么做的', '帮我制定一个计划'],
-      ['换个角度分析', '结合我的店铺情况', '这个方案的预期效果'],
+      ['详细分析数据', '看下市场趋势', '给我操作建议'],
+      ['具体怎么操作', '先看竞品', '帮我定个计划'],
+      ['换个角度看', '结合我店铺来', '这个方案的预期'],
     ]),
   }
 }
