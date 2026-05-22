@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import type { Product, ProductDetail, ProductScores, NewProductFilter } from '@/types'
+import type { Product, ProductScores, NewProductFilter } from '@/types'
 
 function makeScores(
   title: number, mainImage: number, video: number, reviews: number,
@@ -48,13 +48,10 @@ const sampleProducts: Product[] = [
       competitor: {
         name: 'UV冰袖-防晒专家', price: 27.9, dailySales: '日销4,200+', score: 94,
         scores: makeScores(14, 13, 8, 14, 15, 9, 10, 10),
-        experience: {
-          product: 4.9, logistics: 4.8, service: 4.7, overall: 4.75, competitorOverall: 4.8,
-          gaps: [],
-        },
+        experience: { product: 4.9, logistics: 4.8, service: 4.7, overall: 4.75, competitorOverall: 4.8, gaps: [] },
       },
     },
-    actionOptions: ['查看竞品对比', '优化标题主图', '一键上架'],
+    actionOptions: ['查看竞品对比', '优化标题主图', '分析上架策略'],
   },
   {
     id: 'p2', name: '夏季冰丝凉感T恤', price: 49.9, image: '', score: 88,
@@ -86,13 +83,10 @@ const sampleProducts: Product[] = [
       competitor: {
         name: '冰感科技T恤旗舰店', price: 45.9, dailySales: '日销3,800+', score: 91,
         scores: makeScores(14, 14, 9, 13, 14, 9, 9, 9),
-        experience: {
-          product: 4.8, logistics: 4.7, service: 4.8, overall: 4.7, competitorOverall: 4.6,
-          gaps: [],
-        },
+        experience: { product: 4.8, logistics: 4.7, service: 4.8, overall: 4.7, competitorOverall: 4.6, gaps: [] },
       },
     },
-    actionOptions: ['查看竞品对比', '优化标题主图', '一键上架'],
+    actionOptions: ['查看竞品对比', '优化标题主图', '分析上架策略'],
   },
   {
     id: 'p3', name: '便携挂脖风扇', price: 39.9, image: '', score: 85,
@@ -101,8 +95,8 @@ const sampleProducts: Product[] = [
       category: '数码配件', trend: '季节性上升', competition: '中等', profitMargin: '42%',
       scores: makeScores(11, 12, 8, 11, 12, 7, 8, 8),
       traffic: [
-        { channel: '商品卡', percent: 25, trend: 'stable' },
         { channel: '搜索', percent: 30, trend: 'up' },
+        { channel: '商品卡', percent: 25, trend: 'stable' },
         { channel: '短视频', percent: 20, trend: 'stable' },
         { channel: '推荐流量', percent: 15, trend: 'down' },
         { channel: '付费投放', percent: 10, trend: 'up' },
@@ -124,13 +118,10 @@ const sampleProducts: Product[] = [
       competitor: {
         name: '酷风数码专营', price: 35.9, dailySales: '日销2,500+', score: 89,
         scores: makeScores(13, 13, 9, 12, 13, 9, 9, 8),
-        experience: {
-          product: 4.7, logistics: 4.6, service: 4.8, overall: 4.6, competitorOverall: 4.4,
-          gaps: [],
-        },
+        experience: { product: 4.7, logistics: 4.6, service: 4.8, overall: 4.6, competitorOverall: 4.4, gaps: [] },
       },
     },
-    actionOptions: ['查看竞品对比', '优化标题主图', '一键上架'],
+    actionOptions: ['查看竞品对比', '优化标题主图', '分析上架策略'],
   },
   {
     id: 'p4', name: '防晒霜SPF50+', price: 59.9, image: '', score: 90,
@@ -160,22 +151,217 @@ const sampleProducts: Product[] = [
       competitor: {
         name: '美肌日记旗舰店', price: 55.9, dailySales: '日销6,100+', score: 92,
         scores: makeScores(14, 14, 8, 14, 15, 9, 9, 9),
-        experience: {
-          product: 4.8, logistics: 4.7, service: 4.7, overall: 4.65, competitorOverall: 4.7,
-          gaps: [],
-        },
+        experience: { product: 4.8, logistics: 4.7, service: 4.7, overall: 4.65, competitorOverall: 4.7, gaps: [] },
       },
     },
-    actionOptions: ['查看竞品对比', '优化标题主图', '一键上架'],
+    actionOptions: ['查看竞品对比', '优化标题主图', '分析上架策略'],
+  },
+  {
+    id: 'p5', name: '智能家居香薰机', price: 79.9, image: '', score: 86,
+    tag: '趋势品', sales: '日销980+', platform: '抖音',
+    detail: {
+      category: '家居用品', trend: '稳定上升', competition: '中等', profitMargin: '48%',
+      scores: makeScores(12, 13, 8, 12, 11, 8, 9, 8),
+      traffic: [
+        { channel: '推荐流量', percent: 40, trend: 'up' },
+        { channel: '短视频', percent: 22, trend: 'up' },
+        { channel: '搜索', percent: 18, trend: 'stable' },
+        { channel: '商品卡', percent: 12, trend: 'stable' },
+        { channel: '付费投放', percent: 8, trend: 'stable' },
+      ],
+      costs: [
+        { label: '采购成本', mine: 32, competitor: 28, unit: '元' },
+        { label: '物流费用', mine: 5, competitor: 4.5, unit: '元' },
+        { label: '平台扣点', mine: 4, competitor: 4, unit: '元' },
+        { label: '投放成本', mine: 3.8, competitor: 4.5, unit: '元/单' },
+      ],
+      experience: {
+        product: 4.5, logistics: 4.6, service: 4.7, overall: 4.55, competitorOverall: 4.6,
+        gaps: [
+          { dimension: '商品描述', myScore: 4.4, competitorScore: 4.8, suggestion: '详情页缺少使用场景动图，建议增加卧室/客厅氛围效果展示' },
+          { dimension: '物流时效', myScore: 4.3, competitorScore: 4.7, suggestion: '包裹体积偏大导致物流费高，建议优化包装尺寸' },
+        ],
+      },
+      competitor: {
+        name: '舒享家居旗舰店', price: 69.9, dailySales: '日销1,500+', score: 88,
+        scores: makeScores(13, 14, 9, 12, 12, 9, 9, 8),
+        experience: { product: 4.8, logistics: 4.7, service: 4.7, overall: 4.6, competitorOverall: 4.55, gaps: [] },
+      },
+    },
+    actionOptions: ['查看竞品对比', '优化标题主图', '分析上架策略'],
+  },
+  {
+    id: 'p6', name: '儿童益智积木桌', price: 159, image: '', score: 87,
+    tag: '长周期品', sales: '日销620+', platform: '抖音',
+    detail: {
+      category: '母婴玩具', trend: '稳定', competition: '中等', profitMargin: '40%',
+      scores: makeScores(13, 14, 8, 13, 11, 9, 8, 8),
+      traffic: [
+        { channel: '搜索', percent: 35, trend: 'stable' },
+        { channel: '商品卡', percent: 25, trend: 'up' },
+        { channel: '推荐流量', percent: 20, trend: 'stable' },
+        { channel: '短视频', percent: 15, trend: 'up' },
+        { channel: '付费投放', percent: 5, trend: 'down' },
+      ],
+      costs: [
+        { label: '采购成本', mine: 65, competitor: 58, unit: '元' },
+        { label: '物流费用', mine: 12, competitor: 10, unit: '元' },
+        { label: '平台扣点', mine: 8, competitor: 8, unit: '元' },
+        { label: '投放成本', mine: 5, competitor: 6.2, unit: '元/单' },
+      ],
+      experience: {
+        product: 4.6, logistics: 4.4, service: 4.8, overall: 4.6, competitorOverall: 4.65,
+        gaps: [
+          { dimension: '物流时效', myScore: 4.2, competitorScore: 4.7, suggestion: '大件物流配送周期长，建议切换京东物流或德邦' },
+        ],
+      },
+      competitor: {
+        name: '贝乐星玩具专营', price: 149, dailySales: '日销850+', score: 89,
+        scores: makeScores(13, 14, 9, 13, 12, 9, 9, 8),
+        experience: { product: 4.7, logistics: 4.7, service: 4.6, overall: 4.65, competitorOverall: 4.6, gaps: [] },
+      },
+    },
+    actionOptions: ['查看竞品对比', '优化标题主图', '分析上架策略'],
+  },
+  {
+    id: 'p7', name: '真空保鲜盒套装', price: 45.9, image: '', score: 84,
+    tag: '趋势品', sales: '日销1,200+', platform: '抖音',
+    detail: {
+      category: '厨房用品', trend: '上升趋势', competition: '较高', profitMargin: '36%',
+      scores: makeScores(11, 12, 7, 12, 11, 8, 9, 8),
+      traffic: [
+        { channel: '短视频', percent: 35, trend: 'up' },
+        { channel: '推荐流量', percent: 28, trend: 'up' },
+        { channel: '搜索', percent: 20, trend: 'stable' },
+        { channel: '商品卡', percent: 10, trend: 'stable' },
+        { channel: '付费投放', percent: 7, trend: 'up' },
+      ],
+      costs: [
+        { label: '采购成本', mine: 18, competitor: 15, unit: '元' },
+        { label: '物流费用', mine: 4, competitor: 3.5, unit: '元' },
+        { label: '平台扣点', mine: 2.3, competitor: 2.3, unit: '元' },
+        { label: '投放成本', mine: 4.5, competitor: 5.8, unit: '元/单' },
+      ],
+      experience: {
+        product: 4.4, logistics: 4.6, service: 4.5, overall: 4.5, competitorOverall: 4.55,
+        gaps: [
+          { dimension: '商品描述', myScore: 4.3, competitorScore: 4.7, suggestion: '主图未展示真空密封效果，建议增加密封测试对比图' },
+          { dimension: '售后服务', myScore: 4.3, competitorScore: 4.7, suggestion: '破损补发流程太慢，建议预包装备用库存' },
+        ],
+      },
+      competitor: {
+        name: '鲜纳保鲜旗舰', price: 42.9, dailySales: '日销1,800+', score: 87,
+        scores: makeScores(13, 14, 8, 13, 12, 9, 9, 8),
+        experience: { product: 4.7, logistics: 4.6, service: 4.7, overall: 4.55, competitorOverall: 4.5, gaps: [] },
+      },
+    },
+    actionOptions: ['查看竞品对比', '优化标题主图', '分析上架策略'],
+  },
+  {
+    id: 'p8', name: '宠物自动喂食器', price: 128, image: '', score: 89,
+    tag: '长周期品', sales: '日销760+', platform: '抖音',
+    detail: {
+      category: '宠物用品', trend: '稳定上升', competition: '中等', profitMargin: '44%',
+      scores: makeScores(13, 14, 9, 13, 12, 9, 9, 9),
+      traffic: [
+        { channel: '推荐流量', percent: 30, trend: 'up' },
+        { channel: '短视频', percent: 30, trend: 'up' },
+        { channel: '搜索', percent: 22, trend: 'stable' },
+        { channel: '商品卡', percent: 12, trend: 'stable' },
+        { channel: '付费投放', percent: 6, trend: 'down' },
+      ],
+      costs: [
+        { label: '采购成本', mine: 52, competitor: 48, unit: '元' },
+        { label: '物流费用', mine: 6, competitor: 5.5, unit: '元' },
+        { label: '平台扣点', mine: 6.4, competitor: 6.4, unit: '元' },
+        { label: '投放成本', mine: 4, competitor: 5.5, unit: '元/单' },
+      ],
+      experience: {
+        product: 4.7, logistics: 4.6, service: 4.7, overall: 4.65, competitorOverall: 4.7,
+        gaps: [
+          { dimension: '客服响应', myScore: 4.5, competitorScore: 4.8, suggestion: '宠物类目咨询量大，建议配置专属客服话术库' },
+        ],
+      },
+      competitor: {
+        name: '萌宠智能生活馆', price: 118, dailySales: '日销950+', score: 91,
+        scores: makeScores(14, 14, 9, 14, 13, 10, 9, 9),
+        experience: { product: 4.8, logistics: 4.7, service: 4.8, overall: 4.7, competitorOverall: 4.65, gaps: [] },
+      },
+    },
+    actionOptions: ['查看竞品对比', '优化标题主图', '分析上架策略'],
+  },
+  {
+    id: 'p9', name: '筋膜枪（迷你款）', price: 89.9, image: '', score: 91,
+    tag: '短期爆品', sales: '日销2,800+', platform: '抖音',
+    detail: {
+      category: '运动健康', trend: '快速上升', competition: '中等', profitMargin: '50%',
+      scores: makeScores(14, 14, 9, 14, 14, 8, 9, 9),
+      traffic: [
+        { channel: '短视频', percent: 42, trend: 'up' },
+        { channel: '推荐流量', percent: 25, trend: 'up' },
+        { channel: '搜索', percent: 15, trend: 'up' },
+        { channel: '商品卡', percent: 10, trend: 'stable' },
+        { channel: '付费投放', percent: 8, trend: 'up' },
+      ],
+      costs: [
+        { label: '采购成本', mine: 35, competitor: 30, unit: '元' },
+        { label: '物流费用', mine: 4.5, competitor: 4, unit: '元' },
+        { label: '平台扣点', mine: 4.5, competitor: 4.5, unit: '元' },
+        { label: '投放成本', mine: 3.5, competitor: 5, unit: '元/单' },
+      ],
+      experience: {
+        product: 4.7, logistics: 4.7, service: 4.6, overall: 4.65, competitorOverall: 4.6,
+        gaps: [
+          { dimension: '售后服务', myScore: 4.4, competitorScore: 4.7, suggestion: '电机质保描述不够清晰，建议在详情页醒目位置标注质保条款' },
+        ],
+      },
+      competitor: {
+        name: '力健运动旗舰店', price: 79.9, dailySales: '日销3,200+', score: 90,
+        scores: makeScores(13, 14, 9, 14, 14, 9, 9, 9),
+        experience: { product: 4.7, logistics: 4.7, service: 4.7, overall: 4.6, competitorOverall: 4.65, gaps: [] },
+      },
+    },
+    actionOptions: ['查看竞品对比', '优化标题主图', '分析上架策略'],
+  },
+  {
+    id: 'p10', name: '免洗洗手液（便携装10支）', price: 19.9, image: '', score: 93,
+    tag: '短期爆品', sales: '日销8,500+', platform: '抖音',
+    detail: {
+      category: '日用清洁', trend: '稳定高位', competition: '激烈', profitMargin: '55%',
+      scores: makeScores(13, 14, 8, 14, 15, 9, 10, 10),
+      traffic: [
+        { channel: '商品卡', percent: 38, trend: 'up' },
+        { channel: '推荐流量', percent: 28, trend: 'stable' },
+        { channel: '搜索', percent: 18, trend: 'up' },
+        { channel: '短视频', percent: 10, trend: 'stable' },
+        { channel: '付费投放', percent: 6, trend: 'down' },
+      ],
+      costs: [
+        { label: '采购成本', mine: 5, competitor: 4.2, unit: '元' },
+        { label: '物流费用', mine: 2, competitor: 1.8, unit: '元' },
+        { label: '平台扣点', mine: 1, competitor: 1, unit: '元' },
+        { label: '投放成本', mine: 1.5, competitor: 2.2, unit: '元/单' },
+      ],
+      experience: {
+        product: 4.9, logistics: 4.8, service: 4.8, overall: 4.85, competitorOverall: 4.8,
+        gaps: [],
+      },
+      competitor: {
+        name: '净护旗舰店', price: 18.9, dailySales: '日销9,200+', score: 94,
+        scores: makeScores(14, 14, 9, 14, 15, 9, 10, 10),
+        experience: { product: 4.9, logistics: 4.8, service: 4.9, overall: 4.8, competitorOverall: 4.85, gaps: [] },
+      },
+    },
+    actionOptions: ['查看竞品对比', '优化标题主图', '分析上架策略'],
   },
 ]
 
 const newProductFilters: NewProductFilter[] = [
   { label: '功能特性', options: ['透气', '速干', '夜光条', '防水', '防紫外线', '抗菌', '加绒', '凉感'] },
-  { label: '运动类型', options: ['跑步', '瑜伽', '健身', '篮球', '足球', '户外', '骑行', '游泳'] },
-  { label: '面料', options: ['冰丝', '聚酯纤维', '棉质', '尼龙', '弹力纤维', '竹纤维', '莫代尔'] },
-  { label: '版型', options: ['修身', '宽松', 'oversize', '短款', '长款', '连体'] },
-  { label: '设计风格', options: ['极简', '印花', '拼接', '渐变', '国潮', 'IP联名', '街头'] },
+  { label: '运动类型', options: ['跑步', '瑜伽', '健身', '篮球', '户外', '骑行', '游泳'] },
+  { label: '面料', options: ['冰丝', '棉质', '尼龙', '弹力纤维', '竹纤维', '莫代尔'] },
+  { label: '版型', options: ['修身', '宽松', 'oversize', '短款', '连体'] },
+  { label: '设计风格', options: ['极简', '印花', '拼接', '渐变', '国潮', 'IP联名'] },
 ]
 
 const newProducts: Product[] = [
@@ -186,8 +372,32 @@ const newProducts: Product[] = [
       category: '运动服饰', trend: '快速上升', competition: '低', profitMargin: '52%',
       scores: makeScores(12, 14, 9, 10, 8, 8, 8, 8),
       newProductTags: ['夜光条', '跑步', '透气', '速干', '修身'],
+      traffic: [
+        { channel: '搜索', percent: 35, trend: 'up' },
+        { channel: '短视频', percent: 30, trend: 'up' },
+        { channel: '推荐流量', percent: 20, trend: 'stable' },
+        { channel: '商品卡', percent: 10, trend: 'stable' },
+        { channel: '付费投放', percent: 5, trend: 'stable' },
+      ],
+      costs: [
+        { label: '采购成本', mine: 25, competitor: 22, unit: '元' },
+        { label: '物流费用', mine: 3.5, competitor: 3.5, unit: '元' },
+        { label: '平台扣点', mine: 3.5, competitor: 3.5, unit: '元' },
+        { label: '投放成本', mine: 2, competitor: 3, unit: '元/单' },
+      ],
+      experience: {
+        product: 4.5, logistics: 4.6, service: 4.7, overall: 4.6, competitorOverall: 4.55,
+        gaps: [
+          { dimension: '商品描述', myScore: 4.4, competitorScore: 4.7, suggestion: '夜光效果在主图中不够明显，建议增加暗光环境实拍图' },
+        ],
+      },
+      competitor: {
+        name: '跑者之光专营', price: 59.9, dailySales: '日销600+', score: 84,
+        scores: makeScores(11, 12, 8, 10, 9, 8, 8, 7),
+        experience: { product: 4.7, logistics: 4.5, service: 4.6, overall: 4.55, competitorOverall: 4.6, gaps: [] },
+      },
     },
-    actionOptions: ['分析新品潜力', '查看同类爆品', '一键上架'],
+    actionOptions: ['分析新品潜力', '查看同类爆品', '分析上架策略'],
   },
   {
     id: 'np2', name: '磁吸瑜伽裤（隐形口袋）', price: 89.9, image: '', score: 91,
@@ -196,8 +406,30 @@ const newProducts: Product[] = [
       category: '运动服饰', trend: '上升趋势', competition: '低', profitMargin: '48%',
       scores: makeScores(13, 14, 10, 11, 9, 8, 8, 9),
       newProductTags: ['瑜伽', '弹力纤维', '修身', '防水', '极简'],
+      traffic: [
+        { channel: '推荐流量', percent: 38, trend: 'up' },
+        { channel: '短视频', percent: 28, trend: 'up' },
+        { channel: '搜索', percent: 18, trend: 'up' },
+        { channel: '商品卡', percent: 10, trend: 'stable' },
+        { channel: '付费投放', percent: 6, trend: 'stable' },
+      ],
+      costs: [
+        { label: '采购成本', mine: 35, competitor: 32, unit: '元' },
+        { label: '物流费用', mine: 3.5, competitor: 3.5, unit: '元' },
+        { label: '平台扣点', mine: 4.5, competitor: 4.5, unit: '元' },
+        { label: '投放成本', mine: 3, competitor: 4, unit: '元/单' },
+      ],
+      experience: {
+        product: 4.7, logistics: 4.6, service: 4.8, overall: 4.7, competitorOverall: 4.6,
+        gaps: [],
+      },
+      competitor: {
+        name: '瑜伽生活馆', price: 79.9, dailySales: '日销900+', score: 86,
+        scores: makeScores(12, 13, 8, 10, 10, 8, 8, 8),
+        experience: { product: 4.5, logistics: 4.5, service: 4.6, overall: 4.6, competitorOverall: 4.7, gaps: [] },
+      },
     },
-    actionOptions: ['分析新品潜力', '查看同类爆品', '一键上架'],
+    actionOptions: ['分析新品潜力', '查看同类爆品', '分析上架策略'],
   },
   {
     id: 'np3', name: 'IP联名篮球袜（国潮风）', price: 39.9, image: '', score: 83,
@@ -206,8 +438,33 @@ const newProducts: Product[] = [
       category: '运动配件', trend: '上升趋势', competition: '中等', profitMargin: '55%',
       scores: makeScores(11, 13, 8, 9, 7, 7, 8, 7),
       newProductTags: ['IP联名', '国潮', '篮球', '棉质', '印花'],
+      traffic: [
+        { channel: '短视频', percent: 42, trend: 'up' },
+        { channel: '推荐流量', percent: 25, trend: 'up' },
+        { channel: '搜索', percent: 18, trend: 'stable' },
+        { channel: '商品卡', percent: 10, trend: 'stable' },
+        { channel: '付费投放', percent: 5, trend: 'stable' },
+      ],
+      costs: [
+        { label: '采购成本', mine: 10, competitor: 8, unit: '元' },
+        { label: '物流费用', mine: 2.5, competitor: 2.5, unit: '元' },
+        { label: '平台扣点', mine: 2, competitor: 2, unit: '元' },
+        { label: '投放成本', mine: 3, competitor: 4, unit: '元/单' },
+      ],
+      experience: {
+        product: 4.3, logistics: 4.5, service: 4.4, overall: 4.4, competitorOverall: 4.5,
+        gaps: [
+          { dimension: '商品描述', myScore: 4.2, competitorScore: 4.6, suggestion: 'IP联名元素展示不够突出，建议在首图放大IP角色形象' },
+          { dimension: '客服响应', myScore: 4.2, competitorScore: 4.7, suggestion: '尺码咨询较多，建议在详情页加尺码对照表' },
+        ],
+      },
+      competitor: {
+        name: '国潮运动坊', price: 35.9, dailySales: '日销1,200+', score: 85,
+        scores: makeScores(12, 13, 8, 10, 9, 8, 8, 8),
+        experience: { product: 4.6, logistics: 4.5, service: 4.7, overall: 4.5, competitorOverall: 4.4, gaps: [] },
+      },
     },
-    actionOptions: ['分析新品潜力', '查看同类爆品', '一键上架'],
+    actionOptions: ['分析新品潜力', '查看同类爆品', '分析上架策略'],
   },
   {
     id: 'np4', name: '竹纤维速干毛巾（户外折叠款）', price: 25.9, image: '', score: 85,
@@ -215,9 +472,31 @@ const newProducts: Product[] = [
     detail: {
       category: '户外用品', trend: '季节性上升', competition: '低', profitMargin: '58%',
       scores: makeScores(12, 13, 8, 10, 8, 8, 9, 8),
-      newProductTags: ['速干', '户外', '竹纤维', '防水', '折叠'],
+      newProductTags: ['速干', '户外', '竹纤维', '防水', '跑步'],
+      traffic: [
+        { channel: '搜索', percent: 38, trend: 'up' },
+        { channel: '商品卡', percent: 25, trend: 'up' },
+        { channel: '推荐流量', percent: 20, trend: 'stable' },
+        { channel: '短视频', percent: 12, trend: 'up' },
+        { channel: '付费投放', percent: 5, trend: 'stable' },
+      ],
+      costs: [
+        { label: '采购成本', mine: 6, competitor: 5, unit: '元' },
+        { label: '物流费用', mine: 2, competitor: 1.8, unit: '元' },
+        { label: '平台扣点', mine: 1.3, competitor: 1.3, unit: '元' },
+        { label: '投放成本', mine: 1.5, competitor: 2, unit: '元/单' },
+      ],
+      experience: {
+        product: 4.5, logistics: 4.7, service: 4.6, overall: 4.6, competitorOverall: 4.5,
+        gaps: [],
+      },
+      competitor: {
+        name: '户外达人精选', price: 22.9, dailySales: '日销800+', score: 82,
+        scores: makeScores(11, 12, 7, 9, 8, 7, 8, 7),
+        experience: { product: 4.4, logistics: 4.6, service: 4.5, overall: 4.5, competitorOverall: 4.6, gaps: [] },
+      },
     },
-    actionOptions: ['分析新品潜力', '查看同类爆品', '一键上架'],
+    actionOptions: ['分析新品潜力', '查看同类爆品', '分析上架策略'],
   },
   {
     id: 'np5', name: '骑行防风夹克（渐变拼接）', price: 129.9, image: '', score: 88,
@@ -226,28 +505,96 @@ const newProducts: Product[] = [
       category: '运动服饰', trend: '快速上升', competition: '低', profitMargin: '42%',
       scores: makeScores(13, 15, 9, 10, 8, 8, 8, 9),
       newProductTags: ['骑行', '防紫外线', '渐变', '拼接', '尼龙'],
+      traffic: [
+        { channel: '短视频', percent: 35, trend: 'up' },
+        { channel: '推荐流量', percent: 30, trend: 'up' },
+        { channel: '搜索', percent: 20, trend: 'up' },
+        { channel: '商品卡', percent: 10, trend: 'stable' },
+        { channel: '付费投放', percent: 5, trend: 'stable' },
+      ],
+      costs: [
+        { label: '采购成本', mine: 55, competitor: 50, unit: '元' },
+        { label: '物流费用', mine: 4, competitor: 4, unit: '元' },
+        { label: '平台扣点', mine: 6.5, competitor: 6.5, unit: '元' },
+        { label: '投放成本', mine: 4, competitor: 5.5, unit: '元/单' },
+      ],
+      experience: {
+        product: 4.6, logistics: 4.7, service: 4.7, overall: 4.65, competitorOverall: 4.6,
+        gaps: [],
+      },
+      competitor: {
+        name: '风行运动旗舰', price: 119, dailySales: '日销450+', score: 85,
+        scores: makeScores(12, 13, 8, 10, 9, 8, 8, 8),
+        experience: { product: 4.5, logistics: 4.6, service: 4.6, overall: 4.6, competitorOverall: 4.65, gaps: [] },
+      },
     },
-    actionOptions: ['分析新品潜力', '查看同类爆品', '一键上架'],
+    actionOptions: ['分析新品潜力', '查看同类爆品', '分析上架策略'],
   },
   {
-    id: 'np6', name: '游泳专用防水手机袋（触屏款）', price: 19.9, image: '', score: 82,
+    id: 'np6', name: '纳米海绵擦（厨房专用）', price: 12.9, image: '', score: 82,
     tag: '新奇特', sales: '新品首发', platform: '抖音',
     detail: {
-      category: '数码配件', trend: '季节性上升', competition: '中等', profitMargin: '62%',
+      category: '厨房清洁', trend: '稳定', competition: '中等', profitMargin: '65%',
       scores: makeScores(11, 12, 7, 9, 7, 7, 8, 8),
-      newProductTags: ['游泳', '防水', '极简', '聚酯纤维'],
+      newProductTags: ['极简', '棉质'],
+      traffic: [
+        { channel: '商品卡', percent: 40, trend: 'stable' },
+        { channel: '搜索', percent: 30, trend: 'up' },
+        { channel: '推荐流量', percent: 18, trend: 'stable' },
+        { channel: '短视频', percent: 8, trend: 'up' },
+        { channel: '付费投放', percent: 4, trend: 'stable' },
+      ],
+      costs: [
+        { label: '采购成本', mine: 2.5, competitor: 2, unit: '元' },
+        { label: '物流费用', mine: 1.5, competitor: 1.2, unit: '元' },
+        { label: '平台扣点', mine: 0.6, competitor: 0.6, unit: '元' },
+        { label: '投放成本', mine: 1, competitor: 1.5, unit: '元/单' },
+      ],
+      experience: {
+        product: 4.3, logistics: 4.5, service: 4.4, overall: 4.4, competitorOverall: 4.45,
+        gaps: [
+          { dimension: '商品描述', myScore: 4.2, competitorScore: 4.5, suggestion: '缺少使用前后对比图，建议增加去污效果实拍' },
+        ],
+      },
+      competitor: {
+        name: '洁净之家旗舰店', price: 11.9, dailySales: '日销2,500+', score: 84,
+        scores: makeScores(12, 13, 7, 10, 9, 8, 8, 8),
+        experience: { product: 4.5, logistics: 4.5, service: 4.5, overall: 4.45, competitorOverall: 4.4, gaps: [] },
+      },
     },
-    actionOptions: ['分析新品潜力', '查看同类爆品', '一键上架'],
+    actionOptions: ['分析新品潜力', '查看同类爆品', '分析上架策略'],
   },
   {
-    id: 'np7', name: '加绒健身手套（防滑硅胶）', price: 34.9, image: '', score: 84,
+    id: 'np7', name: '益生菌软糖（便携装）', price: 34.9, image: '', score: 86,
     tag: '新奇特', sales: '新品首发', platform: '抖音',
     detail: {
-      category: '运动配件', trend: '稳定', competition: '中等', profitMargin: '50%',
-      scores: makeScores(11, 12, 8, 9, 7, 8, 8, 8),
-      newProductTags: ['健身', '加绒', '防紫外线', '修身'],
+      category: '食品保健', trend: '快速上升', competition: '低', profitMargin: '60%',
+      scores: makeScores(12, 14, 8, 10, 8, 8, 8, 8),
+      newProductTags: ['极简', '修身'],
+      traffic: [
+        { channel: '推荐流量', percent: 35, trend: 'up' },
+        { channel: '短视频', percent: 32, trend: 'up' },
+        { channel: '搜索', percent: 18, trend: 'up' },
+        { channel: '商品卡', percent: 10, trend: 'stable' },
+        { channel: '付费投放', percent: 5, trend: 'stable' },
+      ],
+      costs: [
+        { label: '采购成本', mine: 8, competitor: 7, unit: '元' },
+        { label: '物流费用', mine: 2.5, competitor: 2.5, unit: '元' },
+        { label: '平台扣点', mine: 1.7, competitor: 1.7, unit: '元' },
+        { label: '投放成本', mine: 3, competitor: 4.5, unit: '元/单' },
+      ],
+      experience: {
+        product: 4.5, logistics: 4.6, service: 4.7, overall: 4.6, competitorOverall: 4.55,
+        gaps: [],
+      },
+      competitor: {
+        name: '肠道健康专营', price: 32.9, dailySales: '日销1,100+', score: 84,
+        scores: makeScores(11, 13, 8, 10, 9, 8, 8, 8),
+        experience: { product: 4.4, logistics: 4.6, service: 4.6, overall: 4.55, competitorOverall: 4.6, gaps: [] },
+      },
     },
-    actionOptions: ['分析新品潜力', '查看同类爆品', '一键上架'],
+    actionOptions: ['分析新品潜力', '查看同类爆品', '分析上架策略'],
   },
   {
     id: 'np8', name: '莫代尔Oversize运动套装', price: 99.9, image: '', score: 86,
@@ -256,9 +603,104 @@ const newProducts: Product[] = [
       category: '运动服饰', trend: '快速上升', competition: '低', profitMargin: '45%',
       scores: makeScores(12, 14, 9, 10, 8, 8, 8, 9),
       newProductTags: ['oversize', '莫代尔', '透气', '极简', '健身'],
+      traffic: [
+        { channel: '短视频', percent: 38, trend: 'up' },
+        { channel: '推荐流量', percent: 28, trend: 'up' },
+        { channel: '搜索', percent: 18, trend: 'stable' },
+        { channel: '商品卡', percent: 10, trend: 'stable' },
+        { channel: '付费投放', percent: 6, trend: 'up' },
+      ],
+      costs: [
+        { label: '采购成本', mine: 40, competitor: 38, unit: '元' },
+        { label: '物流费用', mine: 4, competitor: 3.5, unit: '元' },
+        { label: '平台扣点', mine: 5, competitor: 5, unit: '元' },
+        { label: '投放成本', mine: 3.5, competitor: 4.8, unit: '元/单' },
+      ],
+      experience: {
+        product: 4.5, logistics: 4.5, service: 4.6, overall: 4.55, competitorOverall: 4.5,
+        gaps: [
+          { dimension: '物流时效', myScore: 4.3, competitorScore: 4.6, suggestion: '套装发货体积大，建议使用压缩包装' },
+        ],
+      },
+      competitor: {
+        name: '舒适运动旗舰店', price: 89.9, dailySales: '日销700+', score: 84,
+        scores: makeScores(11, 13, 8, 10, 9, 8, 8, 8),
+        experience: { product: 4.4, logistics: 4.6, service: 4.5, overall: 4.5, competitorOverall: 4.55, gaps: [] },
+      },
     },
-    actionOptions: ['分析新品潜力', '查看同类爆品', '一键上架'],
+    actionOptions: ['分析新品潜力', '查看同类爆品', '分析上架策略'],
   },
+  {
+    id: 'np9', name: '硅胶折叠水杯（户外便携）', price: 22.9, image: '', score: 84,
+    tag: '新奇特', sales: '新品首发', platform: '抖音',
+    detail: {
+      category: '户外用品', trend: '季节性上升', competition: '低', profitMargin: '56%',
+      scores: makeScores(11, 13, 8, 10, 8, 8, 8, 8),
+      newProductTags: ['户外', '防水', '跑步', '速干'],
+      traffic: [
+        { channel: '搜索', percent: 32, trend: 'up' },
+        { channel: '推荐流量', percent: 28, trend: 'up' },
+        { channel: '短视频', percent: 22, trend: 'up' },
+        { channel: '商品卡', percent: 12, trend: 'stable' },
+        { channel: '付费投放', percent: 6, trend: 'stable' },
+      ],
+      costs: [
+        { label: '采购成本', mine: 5.5, competitor: 4.8, unit: '元' },
+        { label: '物流费用', mine: 2, competitor: 1.8, unit: '元' },
+        { label: '平台扣点', mine: 1.1, competitor: 1.1, unit: '元' },
+        { label: '投放成本', mine: 1.8, competitor: 2.5, unit: '元/单' },
+      ],
+      experience: {
+        product: 4.4, logistics: 4.6, service: 4.5, overall: 4.5, competitorOverall: 4.45,
+        gaps: [],
+      },
+      competitor: {
+        name: '户外精选店', price: 19.9, dailySales: '日销1,300+', score: 81,
+        scores: makeScores(10, 12, 7, 9, 8, 7, 8, 7),
+        experience: { product: 4.3, logistics: 4.5, service: 4.4, overall: 4.45, competitorOverall: 4.5, gaps: [] },
+      },
+    },
+    actionOptions: ['分析新品潜力', '查看同类爆品', '分析上架策略'],
+  },
+  {
+    id: 'np10', name: '宠物自动饮水机（陶瓷款）', price: 68, image: '', score: 89,
+    tag: '新奇特', sales: '新品首发', platform: '抖音',
+    detail: {
+      category: '宠物用品', trend: '快速上升', competition: '低', profitMargin: '47%',
+      scores: makeScores(13, 14, 9, 11, 8, 8, 9, 9),
+      newProductTags: ['极简', '印花'],
+      traffic: [
+        { channel: '推荐流量', percent: 35, trend: 'up' },
+        { channel: '短视频', percent: 30, trend: 'up' },
+        { channel: '搜索', percent: 20, trend: 'up' },
+        { channel: '商品卡', percent: 10, trend: 'stable' },
+        { channel: '付费投放', percent: 5, trend: 'stable' },
+      ],
+      costs: [
+        { label: '采购成本', mine: 28, competitor: 25, unit: '元' },
+        { label: '物流费用', mine: 5, competitor: 4.5, unit: '元' },
+        { label: '平台扣点', mine: 3.4, competitor: 3.4, unit: '元' },
+        { label: '投放成本', mine: 3, competitor: 4.2, unit: '元/单' },
+      ],
+      experience: {
+        product: 4.6, logistics: 4.7, service: 4.8, overall: 4.7, competitorOverall: 4.65,
+        gaps: [],
+      },
+      competitor: {
+        name: '萌宠优选', price: 59, dailySales: '日销550+', score: 85,
+        scores: makeScores(12, 13, 8, 10, 9, 8, 8, 8),
+        experience: { product: 4.5, logistics: 4.6, service: 4.6, overall: 4.65, competitorOverall: 4.7, gaps: [] },
+      },
+    },
+    actionOptions: ['分析新品潜力', '查看同类爆品', '分析上架策略'],
+  },
+]
+
+const scenes = [
+  { id: 'summer', name: '夏季应季', icon: '☀️', matchTags: ['透气', '速干', '防水', '凉感', '冰丝', '防紫外线'] },
+  { id: 'lowprice', name: '低价引流', icon: '💰', maxPrice: 35 },
+  { id: 'profit', name: '高利润款', icon: '📈', minMargin: 45 },
+  { id: 'novelty', name: '新奇特蓝海', icon: '✨', matchTags: ['夜光条', 'IP联名'], matchTag: '新奇特' },
 ]
 
 export const useProductStore = defineStore('product', () => {
@@ -298,6 +740,28 @@ export const useProductStore = defineStore('product', () => {
     })
   }
 
+  function getScenes() {
+    return scenes
+  }
+
+  function filterByScene(sceneId: string): Product[] {
+    const scene = scenes.find(s => s.id === sceneId)
+    if (!scene) return newProducts
+    return newProducts.filter(p => {
+      if (scene.maxPrice && p.price > scene.maxPrice) return false
+      if (scene.minMargin) {
+        const margin = parseInt(p.detail.profitMargin)
+        if (margin < scene.minMargin) return false
+      }
+      if (scene.matchTags) {
+        const tags = p.detail.newProductTags ?? []
+        if (scene.matchTag && p.tag === scene.matchTag) return true
+        if (!scene.matchTags.some(t => tags.includes(t))) return false
+      }
+      return true
+    })
+  }
+
   return {
     selectedProduct,
     showPanel,
@@ -307,5 +771,7 @@ export const useProductStore = defineStore('product', () => {
     getNewProducts,
     getFilters,
     filterNewProducts,
+    getScenes,
+    filterByScene,
   }
 })

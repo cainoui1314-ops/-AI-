@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useChatStore } from '@/store/modules/chat'
 import { useSettingsStore } from '@/store/modules/settings'
+import { useProductStore } from '@/store/modules/product'
 import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
@@ -9,6 +10,7 @@ const router = useRouter()
 const route = useRoute()
 const chatStore = useChatStore()
 const settingsStore = useSettingsStore()
+const productStore = useProductStore()
 const { conversations, activeConversationId } = storeToRefs(chatStore)
 const { data: settings, remaining, quotaLabel } = storeToRefs(settingsStore)
 
@@ -27,6 +29,12 @@ const navItems = [
   { icon: '🎯', label: '我的技能', path: '/skills' },
   { icon: '⭐', label: '工具箱', path: '/favorites' },
   { icon: '🏪', label: 'Skills广场', path: '/store' },
+]
+
+const productNavItems = [
+  { icon: '🆕', label: '新品发现', sublabel: '找蓝海机会品', path: '/new-products' },
+  { icon: '🔥', label: '爆款列表', sublabel: '跟品热销爆款', path: '/hot-products' },
+  { icon: '📦', label: '商品列表', sublabel: '管理店铺商品', path: '/my-products' },
 ]
 
 function isActiveNav(path: string): boolean {
@@ -69,6 +77,22 @@ function goBackToChat() {
       <div v-if="conversations.length === 0" class="empty-hint">
         暂无对话记录
       </div>
+    </div>
+
+    <div class="product-nav">
+      <button
+        v-for="item in productNavItems"
+        :key="item.path"
+        class="product-nav-item"
+        :class="{ active: isActiveNav(item.path) }"
+        @click="productStore.closePanel(); router.push(item.path)"
+      >
+        <span class="product-nav-icon">{{ item.icon }}</span>
+        <div class="product-nav-text">
+          <span class="product-nav-label">{{ item.label }}</span>
+          <span class="product-nav-sub">{{ item.sublabel }}</span>
+        </div>
+      </button>
     </div>
 
     <div class="sidebar-nav">
@@ -179,6 +203,39 @@ function goBackToChat() {
   flex-direction: column;
   gap: 2px;
 }
+
+.product-nav {
+  padding: 8px 12px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.product-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: rgba(255,255,255,0.7);
+  transition: all 0.15s;
+}
+.product-nav-item:hover {
+  background: var(--sidebar-hover);
+  color: #fff;
+}
+.product-nav-item.active {
+  background: var(--sidebar-active);
+  color: #fff;
+}
+.product-nav-icon { font-size: 14px; flex-shrink: 0; }
+.product-nav-text { display: flex; flex-direction: column; }
+.product-nav-label { font-weight: 500; font-size: 13px; }
+.product-nav-sub { font-size: 10px; color: rgba(255,255,255,0.35); }
+.product-nav-item:hover .product-nav-sub,
+.product-nav-item.active .product-nav-sub { color: rgba(255,255,255,0.6); }
 
 .nav-item {
   display: flex;
