@@ -3,9 +3,11 @@ import { useProductStore } from '@/store/modules/product'
 import { useChatStore } from '@/store/modules/chat'
 import { storeToRefs } from 'pinia'
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 
 const productStore = useProductStore()
 const chatStore = useChatStore()
+const router = useRouter()
 const { selectedProduct, showPanel } = storeToRefs(productStore)
 
 const activeTab = ref('overview')
@@ -56,7 +58,7 @@ function flashToast(msg: string) {
 function viewMoreCompetitors() {
   if (!selectedProduct.value) return
   const p = selectedProduct.value
-  chatStore.ensureConversation()
+  chatStore.createConversation()
   chatStore.addUserMessage('查看更多竞品：' + p.name)
   const msgId = chatStore.startStreamingMessage()
   const thinkChunks = ['分析竞品市场格局...', '正在比对同类商品...', '筛选Top竞品...']
@@ -81,13 +83,14 @@ function viewMoreCompetitors() {
       chatStore.finishStreaming(msgId, undefined, ['详细对比第一竞品', '查看竞品流量来源', '分析竞品定价策略'])
     }
   }, 400)
-  flashToast('已为你分析更多竞品，请在对话中查看')
+  flashToast('已创建新对话，正在分析竞品...')
+  router.push('/')
 }
 
 function viewOptimizePlan() {
   if (!selectedProduct.value) return
   const p = selectedProduct.value
-  chatStore.ensureConversation()
+  chatStore.createConversation()
   chatStore.addUserMessage('优化方案：' + p.name)
   const msgId = chatStore.startStreamingMessage()
   const thinkChunks = ['正在分析商品各维度...', '识别优化空间...', '生成优化方案...']
@@ -112,7 +115,8 @@ function viewOptimizePlan() {
       chatStore.finishStreaming(msgId, undefined, ['立即执行优化', '查看优化案例', '自定义优化方案'])
     }
   }, 400)
-  flashToast('优化方案已生成，请在对话中查看')
+  flashToast('已创建新对话，正在生成优化方案...')
+  router.push('/')
 }
 </script>
 
