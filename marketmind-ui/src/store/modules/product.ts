@@ -696,6 +696,277 @@ const newProducts: Product[] = [
   },
 ]
 
+const myProducts: Product[] = [
+  {
+    id: 'mp1', name: '男士速干运动T恤', price: 59.9, image: '', score: 88,
+    tag: '热销款', sales: '日销420+', platform: '抖音',
+    detail: {
+      category: '男装', trend: '稳定上升', competition: '中等', profitMargin: '42%',
+      scores: makeScores(13, 14, 8, 13, 12, 9, 9, 10),
+      traffic: [
+        { channel: '短视频', percent: 40, trend: 'up' },
+        { channel: '推荐流量', percent: 25, trend: 'stable' },
+        { channel: '搜索', percent: 20, trend: 'up' },
+        { channel: '商品卡', percent: 10, trend: 'stable' },
+        { channel: '付费投放', percent: 5, trend: 'down' },
+      ],
+      costs: [
+        { label: '采购成本', mine: 25, competitor: 22, unit: '元' },
+        { label: '物流费用', mine: 4, competitor: 3.8, unit: '元' },
+        { label: '平台扣点', mine: 3, competitor: 3, unit: '元' },
+        { label: '投放成本', mine: 3.5, competitor: 4.2, unit: '元/单' },
+      ],
+      experience: {
+        product: 4.7, logistics: 4.5, service: 4.8, overall: 4.65, competitorOverall: 4.6,
+        gaps: [
+          { dimension: '物流时效', myScore: 4.3, competitorScore: 4.7, suggestion: '部分地区发货偏慢，建议增加华南仓库' },
+        ],
+      },
+      competitor: {
+        name: '速干运动旗舰店', price: 54.9, dailySales: '日销650+', score: 86,
+        scores: makeScores(12, 13, 9, 13, 13, 9, 9, 8),
+        experience: { product: 4.6, logistics: 4.7, service: 4.7, overall: 4.6, competitorOverall: 4.65, gaps: [] },
+      },
+    },
+    actionOptions: ['查看竞品对比', '优化标题主图', '分析上架策略'],
+  },
+  {
+    id: 'mp2', name: '无线蓝牙耳机（运动款）', price: 89, image: '', score: 91,
+    tag: '利润王', sales: '日销280+', platform: '抖音',
+    detail: {
+      category: '数码配件', trend: '快速上升', competition: '较高', profitMargin: '52%',
+      scores: makeScores(14, 14, 9, 14, 13, 9, 9, 9),
+      traffic: [
+        { channel: '搜索', percent: 35, trend: 'up' },
+        { channel: '推荐流量', percent: 28, trend: 'up' },
+        { channel: '短视频', percent: 22, trend: 'up' },
+        { channel: '商品卡', percent: 10, trend: 'stable' },
+        { channel: '付费投放', percent: 5, trend: 'stable' },
+      ],
+      costs: [
+        { label: '采购成本', mine: 32, competitor: 30, unit: '元' },
+        { label: '物流费用', mine: 3, competitor: 3, unit: '元' },
+        { label: '平台扣点', mine: 4.5, competitor: 4.5, unit: '元' },
+        { label: '投放成本', mine: 3.2, competitor: 5, unit: '元/单' },
+      ],
+      experience: {
+        product: 4.8, logistics: 4.7, service: 4.8, overall: 4.75, competitorOverall: 4.7,
+        gaps: [],
+      },
+      competitor: {
+        name: '声浪数码旗舰', price: 79, dailySales: '日销400+', score: 89,
+        scores: makeScores(13, 14, 9, 14, 13, 9, 9, 8),
+        experience: { product: 4.7, logistics: 4.7, service: 4.8, overall: 4.7, competitorOverall: 4.75, gaps: [] },
+      },
+    },
+    actionOptions: ['查看竞品对比', '优化标题主图', '分析上架策略'],
+  },
+  {
+    id: 'mp3', name: '玻尿酸保湿面膜（30片装）', price: 49.9, image: '', score: 72,
+    tag: '待优化', sales: '日销150+', platform: '抖音',
+    detail: {
+      category: '美妆护肤', trend: '稳定', competition: '激烈', profitMargin: '38%',
+      scores: makeScores(10, 11, 6, 10, 9, 8, 9, 9),
+      traffic: [
+        { channel: '付费投放', percent: 42, trend: 'up' },
+        { channel: '推荐流量', percent: 22, trend: 'down' },
+        { channel: '搜索', percent: 18, trend: 'stable' },
+        { channel: '短视频', percent: 12, trend: 'down' },
+        { channel: '商品卡', percent: 6, trend: 'stable' },
+      ],
+      costs: [
+        { label: '采购成本', mine: 18, competitor: 14, unit: '元' },
+        { label: '物流费用', mine: 3.5, competitor: 3, unit: '元' },
+        { label: '平台扣点', mine: 2.5, competitor: 2.5, unit: '元' },
+        { label: '投放成本', mine: 8.5, competitor: 5.2, unit: '元/单' },
+      ],
+      experience: {
+        product: 4.2, logistics: 4.4, service: 4.5, overall: 4.35, competitorOverall: 4.6,
+        gaps: [
+          { dimension: '商品描述', myScore: 4.0, competitorScore: 4.7, suggestion: '详情页缺少成分检测报告，建议增加第三方检测证书' },
+          { dimension: '视频质量', myScore: 3.8, competitorScore: 4.5, suggestion: '主视频时长仅8秒，建议拍摄15-30秒使用效果展示' },
+          { dimension: '客服响应', myScore: 4.1, competitorScore: 4.7, suggestion: '平均响应时间超60秒，建议配置自动回复话术' },
+        ],
+      },
+      competitor: {
+        name: '润肌堂旗舰店', price: 44.9, dailySales: '日销800+', score: 88,
+        scores: makeScores(14, 14, 9, 13, 14, 9, 8, 7),
+        experience: { product: 4.7, logistics: 4.6, service: 4.7, overall: 4.6, competitorOverall: 4.35, gaps: [] },
+      },
+    },
+    actionOptions: ['查看竞品对比', '优化标题主图', '分析上架策略'],
+  },
+  {
+    id: 'mp4', name: '北欧风陶瓷花瓶', price: 35, image: '', score: 85,
+    tag: '稳定款', sales: '日销200+', platform: '抖音',
+    detail: {
+      category: '家居用品', trend: '稳定', competition: '低', profitMargin: '55%',
+      scores: makeScores(12, 13, 7, 13, 12, 9, 9, 8),
+      traffic: [
+        { channel: '推荐流量', percent: 38, trend: 'stable' },
+        { channel: '搜索', percent: 28, trend: 'up' },
+        { channel: '短视频', percent: 18, trend: 'up' },
+        { channel: '商品卡', percent: 12, trend: 'stable' },
+        { channel: '付费投放', percent: 4, trend: 'down' },
+      ],
+      costs: [
+        { label: '采购成本', mine: 10, competitor: 9, unit: '元' },
+        { label: '物流费用', mine: 5, competitor: 4.5, unit: '元' },
+        { label: '平台扣点', mine: 1.8, competitor: 1.8, unit: '元' },
+        { label: '投放成本', mine: 1.5, competitor: 2, unit: '元/单' },
+      ],
+      experience: {
+        product: 4.6, logistics: 4.3, service: 4.7, overall: 4.55, competitorOverall: 4.5,
+        gaps: [
+          { dimension: '物流时效', myScore: 4.1, competitorScore: 4.5, suggestion: '易碎品破损率偏高，建议加强泡沫填充包装' },
+        ],
+      },
+      competitor: {
+        name: '简居家居专营', price: 32, dailySales: '日销350+', score: 83,
+        scores: makeScores(12, 12, 7, 12, 12, 8, 9, 8),
+        experience: { product: 4.5, logistics: 4.5, service: 4.5, overall: 4.5, competitorOverall: 4.55, gaps: [] },
+      },
+    },
+    actionOptions: ['查看竞品对比', '优化标题主图', '分析上架策略'],
+  },
+  {
+    id: 'mp5', name: '猫粮主食罐头（24罐装）', price: 128, image: '', score: 78,
+    tag: '待优化', sales: '日销90+', platform: '抖音',
+    detail: {
+      category: '宠物用品', trend: '上升趋势', competition: '较高', profitMargin: '30%',
+      scores: makeScores(10, 12, 7, 10, 10, 8, 9, 7),
+      traffic: [
+        { channel: '搜索', percent: 45, trend: 'stable' },
+        { channel: '付费投放', percent: 22, trend: 'up' },
+        { channel: '推荐流量', percent: 18, trend: 'down' },
+        { channel: '短视频', percent: 10, trend: 'stable' },
+        { channel: '商品卡', percent: 5, trend: 'stable' },
+      ],
+      costs: [
+        { label: '采购成本', mine: 72, competitor: 65, unit: '元' },
+        { label: '物流费用', mine: 8, competitor: 7, unit: '元' },
+        { label: '平台扣点', mine: 6.4, competitor: 6.4, unit: '元' },
+        { label: '投放成本', mine: 7.5, competitor: 5, unit: '元/单' },
+      ],
+      experience: {
+        product: 4.3, logistics: 4.2, service: 4.4, overall: 4.3, competitorOverall: 4.55,
+        gaps: [
+          { dimension: '标题质量', myScore: 4.0, competitorScore: 4.6, suggestion: '标题缺少核心搜索词，建议加入"全阶段""无谷""高蛋白"等关键词' },
+          { dimension: '销量数据', myScore: 3.8, competitorScore: 4.5, suggestion: '基础销量偏低，建议通过达人带货快速积累初始销量' },
+        ],
+      },
+      competitor: {
+        name: '萌宠优选旗舰店', price: 118, dailySales: '日销320+', score: 87,
+        scores: makeScores(14, 13, 9, 13, 14, 9, 8, 7),
+        experience: { product: 4.7, logistics: 4.5, service: 4.6, overall: 4.55, competitorOverall: 4.3, gaps: [] },
+      },
+    },
+    actionOptions: ['查看竞品对比', '优化标题主图', '分析上架策略'],
+  },
+  {
+    id: 'mp6', name: '瑜伽垫（加厚防滑款）', price: 69, image: '', score: 68,
+    tag: '待优化', sales: '日销60+', platform: '抖音',
+    detail: {
+      category: '运动健康', trend: '季节性上升', competition: '激烈', profitMargin: '35%',
+      scores: makeScores(9, 10, 5, 9, 8, 7, 8, 7),
+      traffic: [
+        { channel: '搜索', percent: 50, trend: 'stable' },
+        { channel: '付费投放', percent: 25, trend: 'up' },
+        { channel: '推荐流量', percent: 12, trend: 'down' },
+        { channel: '短视频', percent: 8, trend: 'stable' },
+        { channel: '商品卡', percent: 5, trend: 'stable' },
+      ],
+      costs: [
+        { label: '采购成本', mine: 30, competitor: 24, unit: '元' },
+        { label: '物流费用', mine: 6, competitor: 5, unit: '元' },
+        { label: '平台扣点', mine: 3.5, competitor: 3.5, unit: '元' },
+        { label: '投放成本', mine: 6.8, competitor: 4.5, unit: '元/单' },
+      ],
+      experience: {
+        product: 4.0, logistics: 4.1, service: 4.3, overall: 4.15, competitorOverall: 4.5,
+        gaps: [
+          { dimension: '标题质量', myScore: 3.8, competitorScore: 4.5, suggestion: '标题未包含品牌词和厚度参数，建议优化为"品牌名 加厚15mm 防滑瑜伽垫"' },
+          { dimension: '主图质量', myScore: 3.9, competitorScore: 4.6, suggestion: '主图缺少使用场景，建议增加瑜伽实拍图，展示防滑纹理细节' },
+          { dimension: '视频质量', myScore: 3.2, competitorScore: 4.4, suggestion: '暂无主视频，建议拍摄防滑测试和材质回弹对比视频' },
+          { dimension: '评价表现', myScore: 3.8, competitorScore: 4.5, suggestion: '好评率偏低，建议优化售后流程并主动引导满意客户评价' },
+        ],
+      },
+      competitor: {
+        name: '优体运动旗舰店', price: 59, dailySales: '日销450+', score: 90,
+        scores: makeScores(14, 14, 9, 14, 14, 9, 8, 8),
+        experience: { product: 4.6, logistics: 4.5, service: 4.6, overall: 4.5, competitorOverall: 4.15, gaps: [] },
+      },
+    },
+    actionOptions: ['查看竞品对比', '优化标题主图', '分析上架策略'],
+  },
+  {
+    id: 'mp7', name: '儿童纯棉短袖套装', price: 79, image: '', score: 82,
+    tag: '稳定款', sales: '日销180+', platform: '抖音',
+    detail: {
+      category: '母婴玩具', trend: '稳定', competition: '中等', profitMargin: '40%',
+      scores: makeScores(11, 13, 7, 12, 11, 9, 9, 8),
+      traffic: [
+        { channel: '推荐流量', percent: 35, trend: 'up' },
+        { channel: '短视频', percent: 28, trend: 'up' },
+        { channel: '搜索', percent: 20, trend: 'stable' },
+        { channel: '商品卡', percent: 12, trend: 'stable' },
+        { channel: '付费投放', percent: 5, trend: 'down' },
+      ],
+      costs: [
+        { label: '采购成本', mine: 35, competitor: 32, unit: '元' },
+        { label: '物流费用', mine: 4, competitor: 3.5, unit: '元' },
+        { label: '平台扣点', mine: 4, competitor: 4, unit: '元' },
+        { label: '投放成本', mine: 2.8, competitor: 3.5, unit: '元/单' },
+      ],
+      experience: {
+        product: 4.5, logistics: 4.5, service: 4.6, overall: 4.5, competitorOverall: 4.5,
+        gaps: [
+          { dimension: '标题质量', myScore: 4.2, competitorScore: 4.6, suggestion: '标题缺少年龄段参数，建议加入"3-8岁"等尺码范围信息' },
+        ],
+      },
+      competitor: {
+        name: '贝乐星童装旗舰', price: 74, dailySales: '日销260+', score: 84,
+        scores: makeScores(13, 13, 8, 12, 12, 9, 8, 8),
+        experience: { product: 4.5, logistics: 4.6, service: 4.5, overall: 4.5, competitorOverall: 4.5, gaps: [] },
+      },
+    },
+    actionOptions: ['查看竞品对比', '优化标题主图', '分析上架策略'],
+  },
+  {
+    id: 'mp8', name: '坚果礼盒（混合8袋装）', price: 45, image: '', score: 90,
+    tag: '利润王', sales: '日销520+', platform: '抖音',
+    detail: {
+      category: '食品保健', trend: '稳定高位', competition: '中等', profitMargin: '48%',
+      scores: makeScores(13, 14, 8, 14, 14, 9, 9, 9),
+      traffic: [
+        { channel: '商品卡', percent: 35, trend: 'up' },
+        { channel: '推荐流量', percent: 28, trend: 'stable' },
+        { channel: '搜索', percent: 20, trend: 'up' },
+        { channel: '短视频', percent: 12, trend: 'up' },
+        { channel: '付费投放', percent: 5, trend: 'down' },
+      ],
+      costs: [
+        { label: '采购成本', mine: 18, competitor: 16, unit: '元' },
+        { label: '物流费用', mine: 3, competitor: 2.8, unit: '元' },
+        { label: '平台扣点', mine: 2.3, competitor: 2.3, unit: '元' },
+        { label: '投放成本', mine: 1.5, competitor: 2.8, unit: '元/单' },
+      ],
+      experience: {
+        product: 4.8, logistics: 4.7, service: 4.7, overall: 4.7, competitorOverall: 4.65,
+        gaps: [],
+      },
+      competitor: {
+        name: '每日坚果旗舰店', price: 42, dailySales: '日销700+', score: 92,
+        scores: makeScores(14, 14, 9, 14, 15, 9, 9, 9),
+        experience: { product: 4.8, logistics: 4.8, service: 4.7, overall: 4.65, competitorOverall: 4.7, gaps: [] },
+      },
+    },
+    actionOptions: ['查看竞品对比', '优化标题主图', '分析上架策略'],
+  },
+]
+
+const myCategories = ['全部', '男装', '数码配件', '美妆护肤', '家居用品', '宠物用品', '运动健康', '母婴玩具', '食品保健']
+
 const scenes = [
   { id: 'summer', name: '夏季应季', icon: '☀️', matchTags: ['透气', '速干', '防水', '凉感', '冰丝', '防紫外线'] },
   { id: 'lowprice', name: '低价引流', icon: '💰', maxPrice: 35 },
@@ -706,6 +977,8 @@ const scenes = [
 export const useProductStore = defineStore('product', () => {
   const selectedProduct = ref<Product | null>(null)
   const showPanel = ref(false)
+  const selectedIds = ref<Set<string>>(new Set())
+  const batchMode = ref(false)
 
   function selectProduct(product: Product) {
     selectedProduct.value = product
@@ -717,12 +990,46 @@ export const useProductStore = defineStore('product', () => {
     selectedProduct.value = null
   }
 
+  function toggleSelect(id: string) {
+    const s = new Set(selectedIds.value)
+    if (s.has(id)) s.delete(id)
+    else s.add(id)
+    selectedIds.value = s
+  }
+
+  function selectAll(ids: string[]) {
+    const s = new Set(selectedIds.value)
+    if (ids.every(id => s.has(id))) {
+      ids.forEach(id => s.delete(id))
+    } else {
+      ids.forEach(id => s.add(id))
+    }
+    selectedIds.value = s
+  }
+
+  function clearSelection() {
+    selectedIds.value = new Set()
+  }
+
+  function toggleBatchMode() {
+    batchMode.value = !batchMode.value
+    if (!batchMode.value) clearSelection()
+  }
+
   function getSampleProducts(): Product[] {
     return sampleProducts
   }
 
   function getNewProducts(): Product[] {
     return newProducts
+  }
+
+  function getMyProducts(): Product[] {
+    return myProducts
+  }
+
+  function getMyCategories(): string[] {
+    return myCategories
   }
 
   function getFilters(): NewProductFilter[] {
@@ -765,10 +1072,18 @@ export const useProductStore = defineStore('product', () => {
   return {
     selectedProduct,
     showPanel,
+    selectedIds,
+    batchMode,
     selectProduct,
     closePanel,
+    toggleSelect,
+    selectAll,
+    clearSelection,
+    toggleBatchMode,
     getSampleProducts,
     getNewProducts,
+    getMyProducts,
+    getMyCategories,
     getFilters,
     filterNewProducts,
     getScenes,
