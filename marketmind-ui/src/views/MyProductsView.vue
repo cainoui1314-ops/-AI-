@@ -2,9 +2,11 @@
 import { useProductStore } from '@/store/modules/product'
 import { useChatStore } from '@/store/modules/chat'
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 
 const productStore = useProductStore()
 const chatStore = useChatStore()
+const router = useRouter()
 
 const products = computed(() => productStore.getMyProducts())
 const categories = productStore.getMyCategories()
@@ -133,9 +135,12 @@ function handleBatchCompare() {
           <h2>商品列表</h2>
           <p class="page-desc">管理店铺商品，多维度分析，批量对比优化</p>
         </div>
-        <button class="batch-btn" :class="{ active: batchMode }" @click="productStore.toggleBatchMode()">
-          {{ batchMode ? '退出多选' : '批量选择' }}
-        </button>
+        <div class="header-actions">
+          <button class="back-btn" @click="router.push('/')">← 返回对话</button>
+          <button class="batch-btn" :class="{ active: batchMode }" @click="productStore.toggleBatchMode()">
+            {{ batchMode ? '退出多选' : '批量选择' }}
+          </button>
+        </div>
       </div>
     </div>
 
@@ -252,6 +257,19 @@ function handleBatchCompare() {
 
 .page-header { margin-bottom: 20px; }
 .header-row { display: flex; justify-content: space-between; align-items: flex-start; }
+.header-actions { display: flex; gap: 8px; }
+.back-btn {
+  padding: 7px 16px;
+  border-radius: 16px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.back-btn:hover { border-color: var(--blue); color: var(--blue); }
 .page-header h2 { font-size: 20px; font-weight: 700; color: var(--text); margin: 0 0 4px; }
 .page-desc { font-size: 14px; color: var(--muted); margin: 0; }
 

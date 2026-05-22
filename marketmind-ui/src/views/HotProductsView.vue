@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { useProductStore } from '@/store/modules/product'
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 
 const productStore = useProductStore()
+const router = useRouter()
 const products = computed(() => productStore.getSampleProducts())
 
 function scoreColor(score: number) {
@@ -34,8 +36,13 @@ function selectProduct(product: any) {
 <template>
   <div class="hot-products-page">
     <div class="page-header">
-      <h2>爆款列表</h2>
-      <p class="page-desc">类目热销品，分析流量结构，跟品或差异化竞争</p>
+      <div class="header-row">
+        <div>
+          <h2>爆款列表</h2>
+          <p class="page-desc">类目热销品，分析流量结构，跟品或差异化竞争</p>
+        </div>
+        <button class="back-btn" @click="router.push('/')">← 返回对话</button>
+      </div>
     </div>
 
     <div class="search-placeholder">
@@ -88,6 +95,20 @@ function selectProduct(product: any) {
 .page-header { margin-bottom: 24px; }
 .page-header h2 { font-size: 20px; font-weight: 700; color: var(--text); margin: 0 0 4px; }
 .page-desc { font-size: 14px; color: var(--muted); margin: 0; }
+
+.header-row { display: flex; justify-content: space-between; align-items: flex-start; }
+.back-btn {
+  padding: 7px 16px;
+  border-radius: 16px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.back-btn:hover { border-color: var(--blue); color: var(--blue); }
 
 .search-placeholder { margin-bottom: 20px; }
 .search-input {
