@@ -12,6 +12,20 @@ function scoreColor(score: number) {
   return 'var(--red)'
 }
 
+const gradients = [
+  ['#667eea', '#764ba2'], ['#f093fb', '#f5576c'], ['#4facfe', '#00f2fe'],
+  ['#43e97b', '#38f9d7'], ['#fa709a', '#fee140'], ['#a18cd1', '#fbc2eb'],
+  ['#fccb90', '#d57eeb'], ['#e0c3fc', '#8ec5fc'], ['#f5576c', '#ff6a88'],
+  ['#667eea', '#48c6ef'],
+]
+
+function productGradient(name: string) {
+  let hash = 0
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash)
+  const idx = Math.abs(hash) % gradients.length
+  return gradients[idx]
+}
+
 function selectProduct(product: any) {
   productStore.selectProduct(product)
 }
@@ -35,11 +49,15 @@ function selectProduct(product: any) {
         class="product-card"
         @click="selectProduct(product)"
       >
-        <div class="card-top">
-          <div class="card-score" :style="{ color: scoreColor(product.score) }">{{ product.score }}</div>
-          <span class="card-tag">{{ product.tag }}</span>
+        <div class="card-image" :style="{ background: `linear-gradient(135deg, ${productGradient(product.name)[0]}, ${productGradient(product.name)[1]})` }">
+          <span class="img-text">{{ product.name.slice(0, 2) }}</span>
+          <span class="img-category">{{ product.detail.category }}</span>
+          <div class="card-score-badge" :style="{ color: scoreColor(product.score) }">{{ product.score }}分</div>
         </div>
         <div class="card-body">
+          <div class="card-title-row">
+            <span class="card-tag">{{ product.tag }}</span>
+          </div>
           <div class="card-name">{{ product.name }}</div>
           <div class="card-price">¥{{ product.price }}</div>
           <div class="card-stats">
@@ -92,12 +110,12 @@ function selectProduct(product: any) {
 }
 
 .product-card {
-  padding: 16px;
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   cursor: pointer;
   transition: all 0.15s;
+  overflow: hidden;
 }
 .product-card:hover {
   border-color: var(--blue);
@@ -105,13 +123,49 @@ function selectProduct(product: any) {
   transform: translateY(-2px);
 }
 
-.card-top {
+.card-image {
+  position: relative;
+  width: 100%;
+  height: 140px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  justify-content: center;
+  flex-direction: column;
+  gap: 4px;
 }
-.card-score { font-size: 24px; font-weight: 700; }
+.img-text {
+  font-size: 36px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.9);
+  text-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.img-category {
+  font-size: 12px;
+  color: rgba(255,255,255,0.7);
+  font-weight: 500;
+}
+.card-score-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255,255,255,0.95);
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.card-body {
+  padding: 14px 16px 16px;
+}
+
+.card-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
 .card-tag {
   font-size: 11px;
   padding: 2px 8px;

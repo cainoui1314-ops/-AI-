@@ -26,6 +26,20 @@ function trendIcon(t: string) {
   return t === 'up' ? '↑' : t === 'down' ? '↓' : '→'
 }
 
+const gradients = [
+  ['#667eea', '#764ba2'], ['#f093fb', '#f5576c'], ['#4facfe', '#00f2fe'],
+  ['#43e97b', '#38f9d7'], ['#fa709a', '#fee140'], ['#a18cd1', '#fbc2eb'],
+  ['#fccb90', '#d57eeb'], ['#e0c3fc', '#8ec5fc'], ['#f5576c', '#ff6a88'],
+  ['#667eea', '#48c6ef'],
+]
+
+function productGradient(name: string) {
+  let hash = 0
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash)
+  const idx = Math.abs(hash) % gradients.length
+  return gradients[idx]
+}
+
 const tabs = [
   { id: 'overview', label: '概览' },
   { id: 'competitor', label: '竞品对标' },
@@ -120,8 +134,15 @@ function viewOptimizePlan() {
       </div>
       <div class="tab-content">
         <div v-if="activeTab === 'overview'" class="tab-pane">
+          <div class="product-image-banner" :style="{ background: `linear-gradient(135deg, ${productGradient(selectedProduct.name)[0]}, ${productGradient(selectedProduct.name)[1]})` }">
+            <span class="banner-text">{{ selectedProduct.name.slice(0, 2) }}</span>
+            <span class="banner-category">{{ selectedProduct.detail.category }}</span>
+            <div class="banner-score" :style="{ color: scoreColor(selectedProduct.score) }">
+              <span class="score-num">{{ selectedProduct.score }}</span>
+              <span class="score-label">总分</span>
+            </div>
+          </div>
           <div class="product-hero">
-            <div class="hero-avatar">{{ selectedProduct.name.slice(0, 2) }}</div>
             <div class="hero-info">
               <div class="hero-name">{{ selectedProduct.name }}</div>
               <div class="hero-price">¥{{ selectedProduct.price }}</div>
@@ -129,10 +150,6 @@ function viewOptimizePlan() {
                 <span class="hero-tag">{{ selectedProduct.tag }}</span>
                 <span class="hero-sales">{{ selectedProduct.sales }}</span>
               </div>
-            </div>
-            <div class="hero-score" :style="{ color: scoreColor(selectedProduct.score) }">
-              <span class="score-num">{{ selectedProduct.score }}</span>
-              <span class="score-label">总分</span>
             </div>
           </div>
 
@@ -392,17 +409,45 @@ function viewOptimizePlan() {
   flex-direction: column;
 }
 
+.product-image-banner {
+  position: relative;
+  width: calc(100% + 40px);
+  margin: -20px -20px 0 -20px;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 4px;
+}
+.banner-text {
+  font-size: 44px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.9);
+  text-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.banner-category {
+  font-size: 13px;
+  color: rgba(255,255,255,0.7);
+  font-weight: 500;
+}
+.banner-score {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: rgba(255,255,255,0.95);
+  padding: 6px 14px;
+  border-radius: 14px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
 .product-hero {
   display: flex;
   gap: 12px;
   margin-bottom: 20px;
   align-items: center;
-}
-.hero-avatar {
-  width: 56px; height: 56px; border-radius: var(--radius);
-  background: var(--surface-2);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 20px; color: var(--soft); flex-shrink: 0;
+  padding-top: 16px;
 }
 .hero-info { flex: 1; }
 .hero-name { font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
@@ -413,12 +458,8 @@ function viewOptimizePlan() {
   background: var(--blue-soft); color: var(--blue); font-weight: 500;
 }
 .hero-sales { font-size: 12px; color: var(--muted); }
-.hero-score {
-  text-align: center;
-  flex-shrink: 0;
-}
-.score-num { display: block; font-size: 32px; font-weight: 700; line-height: 1; }
-.score-label { display: block; font-size: 11px; color: var(--muted); margin-top: 2px; }
+.score-num { display: block; font-size: 20px; font-weight: 700; line-height: 1; }
+.score-label { display: block; font-size: 10px; color: var(--muted); margin-top: 2px; }
 
 .section-title {
   font-size: 13px; font-weight: 600; color: var(--muted);
