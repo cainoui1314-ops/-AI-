@@ -10,6 +10,20 @@ const productStore = useProductStore()
 const { activeConversation } = storeToRefs(chatStore)
 const scrollContainer = ref<HTMLElement | null>(null)
 
+const gradients = [
+  ['#667eea', '#764ba2'], ['#f093fb', '#f5576c'], ['#4facfe', '#00f2fe'],
+  ['#43e97b', '#38f9d7'], ['#fa709a', '#fee140'], ['#a18cd1', '#fbc2eb'],
+  ['#fccb90', '#d57eeb'], ['#e0c3fc', '#8ec5fc'], ['#f5576c', '#ff6a88'],
+  ['#667eea', '#48c6ef'],
+]
+
+function productGradient(name: string) {
+  let hash = 0
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash)
+  const idx = Math.abs(hash) % gradients.length
+  return gradients[idx]
+}
+
 watch(
   () => activeConversation.value?.messages.length,
   () => {
@@ -57,7 +71,7 @@ function onProductClick(product: Product) {
     if (i >= thinkingSteps.length) {
       clearInterval(interval)
       setTimeout(() => {
-        const content = `嗯，「${product.name}」确实值得关注 🔥\n\n📊 快速数据\n• 爆品指数：${product.score}/100\n• 日销量：${product.sales}\n• 利润率：${product.detail.profitMargin}\n• 趋势：${product.detail.trend}\n\n点击右侧面板看完整详情，或者选个方向继续聊。`
+        const content = `嗯，「${product.name}」确实值得关注 🔥\n\n📊 快速数据\n• 爆品指数：${product.score}/100\n• 日销量：${product.sales}\n• 利润率：${product.detail.profitMargin}\n• 趋势：${product.detail.trend}\n• 品类：${product.detail.category}\n• 竞争度：${product.detail.competition}\n\n点击右侧面板看完整详情，或者选个方向继续聊。`
         const chars = [...content]
         let j = 0
         const contentInterval = setInterval(() => {
@@ -107,7 +121,7 @@ function onProductClick(product: Product) {
               class="product-card"
               @click="onProductClick(product)"
             >
-              <div class="card-img">{{ product.name.slice(0, 2) }}</div>
+              <div class="card-img" :style="{ background: `linear-gradient(135deg, ${productGradient(product.name)[0]}, ${productGradient(product.name)[1]})` }">{{ product.name.slice(0, 2) }}</div>
               <div class="card-info">
                 <div class="card-name">{{ product.name }}</div>
                 <div class="card-meta">
@@ -268,9 +282,8 @@ function onProductClick(product: Product) {
 
 .card-img {
   width: 52px; height: 52px; border-radius: 8px;
-  background: var(--surface-2);
   display: flex; align-items: center; justify-content: center;
-  font-size: 16px; color: var(--soft); flex-shrink: 0;
+  font-size: 16px; flex-shrink: 0;
 }
 .card-info { flex: 1; min-width: 0; }
 .card-name {
