@@ -252,7 +252,7 @@ function switchPlan(plan: 'free' | 'pro' | 'enterprise') {
 </template>
 
 <style scoped>
-.settings-page { min-height: 100vh; background: var(--bg); }
+.settings-page { flex: 1; overflow-y: auto; background: var(--bg); }
 
 .settings-header {
   display: flex; align-items: center; gap: 16px;

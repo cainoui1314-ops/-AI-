@@ -154,7 +154,7 @@ function goBack() {
 </template>
 
 <style scoped>
-.favorites-page { min-height: 100vh; background: var(--bg); }
+.favorites-page { flex: 1; overflow-y: auto; background: var(--bg); }
 
 .page-header {
   display: flex; align-items: center; gap: 16px;
