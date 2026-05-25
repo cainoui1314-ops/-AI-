@@ -3,6 +3,7 @@ import { useProductStore } from '@/store/modules/product'
 import { useChatStore } from '@/store/modules/chat'
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { productGradient, scoreColor } from '@/utils/product'
 
 const productStore = useProductStore()
 const chatStore = useChatStore()
@@ -15,27 +16,6 @@ const { selectedIds, batchMode } = productStore
 const activeCategory = ref('全部')
 const sortBy = ref('score-desc')
 const onlyAlerts = ref(false)
-
-function scoreColor(score: number) {
-  if (score >= 90) return '#22c55e'
-  if (score >= 70) return '#4f6ef7'
-  if (score >= 50) return '#f97316'
-  return '#ef4444'
-}
-
-const gradients = [
-  ['#667eea', '#764ba2'], ['#f093fb', '#f5576c'], ['#4facfe', '#00f2fe'],
-  ['#43e97b', '#38f9d7'], ['#fa709a', '#fee140'], ['#a18cd1', '#fbc2eb'],
-  ['#fccb90', '#d57eeb'], ['#e0c3fc', '#8ec5fc'], ['#f5576c', '#ff6a88'],
-  ['#667eea', '#48c6ef'],
-]
-
-function productGradient(name: string) {
-  let hash = 0
-  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash)
-  const idx = Math.abs(hash) % gradients.length
-  return gradients[idx]
-}
 
 function hasAlerts(p: any): boolean {
   if (!p.detail.scores) return false
@@ -236,6 +216,7 @@ function handleBatchCompare() {
           <div v-if="product.detail.traffic" class="card-traffic">
             <span class="traffic-main">主力：{{ product.detail.traffic[0].channel }} {{ product.detail.traffic[0].percent }}%</span>
           </div>
+          <div class="card-hint">点击查看完整分析 →</div>
         </div>
       </div>
       <div v-if="filtered.length === 0" class="empty-state">
@@ -430,7 +411,7 @@ function handleBatchCompare() {
 .card-image {
   position: relative;
   width: 100%;
-  height: 120px;
+  height: 130px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -438,7 +419,7 @@ function handleBatchCompare() {
   gap: 4px;
 }
 .img-text {
-  font-size: 30px;
+  font-size: 32px;
   font-weight: 700;
   color: rgba(255,255,255,0.9);
   text-shadow: 0 2px 8px rgba(0,0,0,0.15);
@@ -516,6 +497,14 @@ function handleBatchCompare() {
 .stat.trend { color: #22c55e; }
 .card-traffic { margin-bottom: 4px; }
 .traffic-main { font-size: 12px; color: var(--blue); font-weight: 500; }
+
+.card-hint {
+  font-size: 11px;
+  color: var(--blue);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.product-card:hover .card-hint { opacity: 1; }
 
 .empty-state {
   grid-column: 1 / -1;

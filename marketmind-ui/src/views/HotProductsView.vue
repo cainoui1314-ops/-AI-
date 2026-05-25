@@ -1,32 +1,23 @@
 <script setup lang="ts">
 import { useProductStore } from '@/store/modules/product'
-import { computed } from 'vue'
+import { productGradient, scoreColor } from '@/utils/product'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const productStore = useProductStore()
 const router = useRouter()
-const products = computed(() => productStore.getSampleProducts())
-
-function scoreColor(score: number) {
-  if (score >= 90) return 'var(--green)'
-  if (score >= 70) return 'var(--blue)'
-  if (score >= 50) return 'var(--amber)'
-  return 'var(--red)'
-}
-
-const gradients = [
-  ['#667eea', '#764ba2'], ['#f093fb', '#f5576c'], ['#4facfe', '#00f2fe'],
-  ['#43e97b', '#38f9d7'], ['#fa709a', '#fee140'], ['#a18cd1', '#fbc2eb'],
-  ['#fccb90', '#d57eeb'], ['#e0c3fc', '#8ec5fc'], ['#f5576c', '#ff6a88'],
-  ['#667eea', '#48c6ef'],
-]
-
-function productGradient(name: string) {
-  let hash = 0
-  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash)
-  const idx = Math.abs(hash) % gradients.length
-  return gradients[idx]
-}
+const searchQuery = ref('')
+const products = computed(() => {
+  let result = productStore.getSampleProducts()
+  if (searchQuery.value.trim()) {
+    const q = searchQuery.value.toLowerCase()
+    result = result.filter(p =>
+      p.name.toLowerCase().includes(q) ||
+      p.detail.category.toLowerCase().includes(q)
+    )
+  }
+  return result
+})
 
 function selectProduct(product: any) {
   productStore.selectProduct(product)
@@ -46,7 +37,7 @@ function selectProduct(product: any) {
     </div>
 
     <div class="search-placeholder">
-      <input class="search-input" placeholder="搜索商品名称..." disabled />
+      <input v-model="searchQuery" class="search-input" placeholder="搜索商品名称..." />
     </div>
 
     <div class="product-grid">
@@ -62,11 +53,11 @@ function selectProduct(product: any) {
           <div class="card-score-badge" :style="{ color: scoreColor(product.score) }">{{ product.score }}分</div>
         </div>
         <div class="card-body">
-          <div class="card-title-row">
+          <div class="card-name">{{ product.name }}</div>
+          <div class="card-meta">
+            <span class="card-price">¥{{ product.price }}</span>
             <span class="card-tag">{{ product.tag }}</span>
           </div>
-          <div class="card-name">{{ product.name }}</div>
-          <div class="card-price">¥{{ product.price }}</div>
           <div class="card-stats">
             <span class="stat">{{ product.sales }}</span>
             <span class="stat">{{ product.detail.profitMargin }} 利润</span>
@@ -147,7 +138,7 @@ function selectProduct(product: any) {
 .card-image {
   position: relative;
   width: 100%;
-  height: 140px;
+  height: 130px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -155,7 +146,7 @@ function selectProduct(product: any) {
   gap: 4px;
 }
 .img-text {
-  font-size: 36px;
+  font-size: 32px;
   font-weight: 700;
   color: rgba(255,255,255,0.9);
   text-shadow: 0 2px 8px rgba(0,0,0,0.15);
@@ -181,31 +172,26 @@ function selectProduct(product: any) {
   padding: 14px 16px 16px;
 }
 
-.card-title-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 6px;
-}
+.card-name { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+
+.card-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.card-price { font-size: 16px; font-weight: 700; color: var(--red); }
 .card-tag {
   font-size: 11px;
-  padding: 2px 8px;
+  padding: 1px 8px;
   border-radius: 4px;
   background: var(--blue-soft);
   color: var(--blue);
   font-weight: 500;
 }
 
-.card-name { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
-.card-price { font-size: 18px; font-weight: 700; color: var(--red); margin-bottom: 8px; }
-
 .card-stats {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   margin-bottom: 6px;
 }
 .stat { font-size: 12px; color: var(--muted); }
-.stat.trend { color: var(--green); }
+.stat.trend { color: #22c55e; }
 
 .card-traffic { margin-bottom: 6px; }
 .traffic-main { font-size: 12px; color: var(--blue); font-weight: 500; }

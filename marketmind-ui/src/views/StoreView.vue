@@ -45,10 +45,10 @@ const storeItems = ref<StoreItem[]>([
   { id: 'listing', name: '一键上架', icon: '📦', description: '类目自动映射、属性智能填充、跨平台批量铺货', category: 'listing', author: '官方', rating: 4.5, users: 5400, isNew: false, isInstalled: true, price: '免费', tags: ['批量上架', '跨平台'] },
   { id: 'traffic', name: '流量运营', icon: '📈', description: '千川投放策略制定、ROI优化、流量来源分析', category: 'operation', author: '官方', rating: 4.7, users: 6800, isNew: false, isInstalled: true, price: '免费', tags: ['千川', 'ROI'] },
   { id: 'analyst', name: '数据诊断师', icon: '📊', description: '全店运营诊断、转化率分析、六维经营体检', category: 'data', author: '官方', rating: 4.8, users: 7300, isNew: false, isInstalled: true, price: '免费', tags: ['数据诊断', '转化分析'] },
-  { id: 'live-assistant', name: '直播助手', icon: '🎬', description: '直播话术生成、实时互动回复、直播数据复盘', category: 'content', author: '官方', rating: 4.6, users: 3200, isNew: true, isInstalled: false, price: '¥9.9/月', tags: ['直播', '话术'] },
-  { id: 'competitor', name: '竞品监控', icon: '🔍', description: '实时追踪竞品价格、销量、活动策略变化', category: 'data', author: '官方', rating: 4.5, users: 4100, isNew: true, isInstalled: false, price: '¥19.9/月', tags: ['竞品', '价格监控'] },
-  { id: 'comment-analyzer', name: '评论分析', icon: '💬', description: '分析商品评论情感倾向，提炼用户痛点和需求', category: 'data', author: '官方', rating: 4.4, users: 2800, isNew: true, isInstalled: false, price: '¥9.9/月', tags: ['评论', '情感分析'] },
-  { id: 'pricing', name: '智能定价', icon: '💰', description: '基于市场数据和竞争分析，智能推荐最优定价策略', category: 'operation', author: '官方', rating: 4.3, users: 1900, isNew: true, isInstalled: false, price: '¥14.9/月', tags: ['定价', '利润优化'] },
+  { id: 'live-assistant', name: '直播助手', icon: '🎬', description: '直播话术生成、实时互动回复、直播数据复盘', category: 'content', author: '官方', rating: 4.6, users: 3200, isNew: true, isInstalled: true, price: '免费', tags: ['直播', '话术'] },
+  { id: 'competitor', name: '竞品监控', icon: '🔍', description: '实时追踪竞品价格、销量、活动策略变化', category: 'data', author: '官方', rating: 4.5, users: 4100, isNew: true, isInstalled: true, price: '免费', tags: ['竞品', '价格监控'] },
+  { id: 'comment-analyzer', name: '评论分析', icon: '💬', description: '分析商品评论情感倾向，提炼用户痛点和需求', category: 'data', author: '官方', rating: 4.4, users: 2800, isNew: true, isInstalled: true, price: '免费', tags: ['评论', '情感分析'] },
+  { id: 'pricing', name: '智能定价', icon: '💰', description: '基于市场数据和竞争分析，智能推荐最优定价策略', category: 'operation', author: '官方', rating: 4.3, users: 1900, isNew: true, isInstalled: true, price: '免费', tags: ['定价', '利润优化'] },
 ])
 
 const filtered = computed(() => {

@@ -344,7 +344,7 @@ function handleKeydown(e: KeyboardEvent) {
       </div>
 
       <div class="model-picker" v-if="showModelMenu" @click.stop>
-        <div class="model-section-title">YUE 模型</div>
+        <div class="model-section-title">悦己模型</div>
         <div
           v-for="m in settingsStore.yueModels.filter(x => !x.id.includes('deepseek') && !x.id.includes('glm') && !x.id.includes('qwen'))"
           :key="m.id"

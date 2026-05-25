@@ -68,7 +68,7 @@ function handleDouyinLogin() {
     <div class="login-card">
       <div class="brand">
         <div class="logo">悦己 <span class="logo-ai">AI</span></div>
-        <div class="slogan">你的抖音电商运营智能体</div>
+        <div class="slogan">AI 驱动的电商运营平台</div>
       </div>
 
       <div class="tabs">

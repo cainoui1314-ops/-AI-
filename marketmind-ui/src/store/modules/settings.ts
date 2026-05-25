@@ -13,6 +13,7 @@ const YUE_MODELS: YUEModel[] = [
     tokenMultiplier: 1.0,
     requiredPlan: 'free',
     icon: '🧠',
+    tipDescription: '消耗 ×1.0 Token，适合日常深度分析任务',
   },
   {
     id: 'yue-fast',
@@ -22,6 +23,7 @@ const YUE_MODELS: YUEModel[] = [
     tokenMultiplier: 0.5,
     requiredPlan: 'free',
     icon: '⚡',
+    tipDescription: '消耗 ×0.5 Token，响应速度快，适合简单问答',
   },
   {
     id: 'yue-ultra',
@@ -31,6 +33,7 @@ const YUE_MODELS: YUEModel[] = [
     tokenMultiplier: 2.0,
     requiredPlan: 'pro',
     icon: '💎',
+    tipDescription: '消耗 ×2.0 Token，旗舰级推理能力，适合复杂分析',
   },
   {
     id: 'yue-auto',
@@ -40,6 +43,7 @@ const YUE_MODELS: YUEModel[] = [
     tokenMultiplier: 1.5,
     requiredPlan: 'pro',
     icon: '🎯',
+    tipDescription: '消耗 ×1.5 Token，AI 自动选择最优模型组合',
   },
   {
     id: 'deepseek-chat',
@@ -49,6 +53,7 @@ const YUE_MODELS: YUEModel[] = [
     tokenMultiplier: 1.0,
     requiredPlan: 'free',
     icon: '🔮',
+    tipDescription: '消耗 ×1.0 Token，通用对话模型',
   },
   {
     id: 'deepseek-reasoner',
@@ -58,6 +63,7 @@ const YUE_MODELS: YUEModel[] = [
     tokenMultiplier: 1.5,
     requiredPlan: 'free',
     icon: '🔍',
+    tipDescription: '消耗 ×1.5 Token，深度推理模型',
   },
   {
     id: 'glm-4-flash',
@@ -67,6 +73,7 @@ const YUE_MODELS: YUEModel[] = [
     tokenMultiplier: 0.5,
     requiredPlan: 'free',
     icon: '💬',
+    tipDescription: '消耗 ×0.5 Token，快速响应模型',
   },
   {
     id: 'qwen-plus',
@@ -76,6 +83,7 @@ const YUE_MODELS: YUEModel[] = [
     tokenMultiplier: 1.0,
     requiredPlan: 'free',
     icon: '🌐',
+    tipDescription: '消耗 ×1.0 Token，通用对话模型',
   },
 ]
 

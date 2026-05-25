@@ -132,7 +132,10 @@ function switchPlan(plan: 'free' | 'pro' | 'enterprise') {
           >
             <div class="yue-model-icon">{{ model.icon }}</div>
             <div class="yue-model-info">
-              <div class="yue-model-name">{{ model.name }}</div>
+              <div class="yue-model-name">
+                {{ model.name }}
+                <span class="info-tip" :data-tip="model.tipDescription">!</span>
+              </div>
               <div class="yue-model-desc">{{ model.description }}</div>
             </div>
             <div class="yue-model-meta">
@@ -208,7 +211,11 @@ function switchPlan(plan: 'free' | 'pro' | 'enterprise') {
               <div class="plan-name">基础版</div>
               <div class="plan-price">免费</div>
               <div class="plan-qty">100 次/月</div>
-              <div class="plan-feature">YUE Pro + YUE Fast</div>
+              <div class="plan-feature">
+                <div>✅ 100次/月</div>
+                <div>✅ YUE Pro + YUE Fast</div>
+                <div>✅ 基础数据分析</div>
+              </div>
             </div>
             <div class="plan-card featured" :class="{ current: userPlan === 'pro' }">
               <div class="plan-badge">推荐</div>
@@ -216,7 +223,12 @@ function switchPlan(plan: 'free' | 'pro' | 'enterprise') {
               <div class="plan-name">专业版</div>
               <div class="plan-price">¥29/月</div>
               <div class="plan-qty">50万 Token</div>
-              <div class="plan-feature">全部模型 + YUE Auto</div>
+              <div class="plan-feature">
+                <div>✅ 50万Token/月</div>
+                <div>✅ 全部模型解锁</div>
+                <div>✅ 智能调度(YUE Auto)</div>
+                <div>✅ 深度分析报告</div>
+              </div>
               <button v-if="userPlan !== 'pro'" class="upgrade-btn" @click="switchPlan('pro')">升级</button>
             </div>
             <div class="plan-card" :class="{ current: userPlan === 'enterprise' }">
@@ -224,7 +236,12 @@ function switchPlan(plan: 'free' | 'pro' | 'enterprise') {
               <div class="plan-name">企业版</div>
               <div class="plan-price">¥99/月</div>
               <div class="plan-qty">无限 Token</div>
-              <div class="plan-feature">全部功能 + 优先支持</div>
+              <div class="plan-feature">
+                <div>✅ 无限Token</div>
+                <div>✅ 全部模型+优先推理</div>
+                <div>✅ 专属顾问支持</div>
+                <div>✅ API 接入权限</div>
+              </div>
               <button v-if="userPlan !== 'enterprise'" class="upgrade-btn" @click="switchPlan('enterprise')">升级</button>
             </div>
           </div>
@@ -337,7 +354,25 @@ function switchPlan(plan: 'free' | 'pro' | 'enterprise') {
 .plan-name { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
 .plan-price { font-size: 20px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
 .plan-qty { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
-.plan-feature { font-size: 11px; color: var(--soft); }
+.plan-feature { font-size: 11px; color: var(--soft); line-height: 1.6; }
+.plan-feature div { text-align: left; padding-left: 4px; }
+.info-tip {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 16px; height: 16px; border-radius: 50%; background: var(--surface-2);
+  color: var(--muted); font-size: 11px; font-weight: 700;
+  margin-left: 6px; cursor: help; position: relative; vertical-align: middle;
+}
+.info-tip:hover::after {
+  content: attr(data-tip); position: absolute; bottom: calc(100% + 8px);
+  left: 50%; transform: translateX(-50%); padding: 6px 12px; border-radius: 6px;
+  background: var(--ink); color: #fff; font-size: 12px; font-weight: 400;
+  white-space: nowrap; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.info-tip:hover::before {
+  content: ''; position: absolute; bottom: calc(100% + 2px);
+  left: 50%; transform: translateX(-50%); border: 5px solid transparent;
+  border-top-color: var(--ink); z-index: 100;
+}
 .upgrade-btn {
   margin-top: 8px; padding: 4px 16px; border-radius: var(--radius-sm);
   background: var(--blue); color: #fff; font-size: 12px; font-weight: 600;

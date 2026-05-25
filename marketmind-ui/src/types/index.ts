@@ -187,6 +187,7 @@ export interface YUEModel {
   tokenMultiplier: number
   requiredPlan: 'free' | 'pro' | 'enterprise'
   icon: string
+  tipDescription?: string
 }
 
 export interface TokenUsage {
