@@ -30,7 +30,7 @@ const { showPanel } = storeToRefs(productStore)
   display: flex;
   flex-direction: column;
   min-width: 0;
-  overflow: hidden;
+  overflow-y: auto;
   transition: margin-right 0.3s ease;
 }
 
